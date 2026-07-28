@@ -6,10 +6,15 @@ import { useNotificationSocket } from '../../src/features/notifications/useNotif
 import { useOfflineStore, setApiClient } from '../../src/features/offline/offlineStore'
 import { apiClient } from '../../src/core/api/client'
 import { Colors } from '../../src/constants'
+import { useOfflineSync } from '../../src/hooks/useOfflineSync'
+import { OfflineBanner } from '../../src/components/ui/OfflineBanner'
+import { useScreenProtection } from '../../src/hooks/useScreenProtection'
 
 export default function AppLayout() {
   const { isAuthenticated, isLoading } = useAuth()
   useNotificationSocket()
+  useOfflineSync()
+  useScreenProtection(true)
 
   useEffect(() => {
     setApiClient(apiClient)
@@ -29,22 +34,25 @@ export default function AppLayout() {
   }
 
   return (
-    <Stack screenOptions={{ headerShown: false }}>
-      <Stack.Screen name="(tabs)" />
-      <Stack.Screen name="patients" />
-      <Stack.Screen name="appointments" />
-      <Stack.Screen name="lab-requests" />
-      <Stack.Screen name="lab-results" />
-      <Stack.Screen name="prescriptions" />
-      <Stack.Screen name="deliveries" />
-      <Stack.Screen name="consultations" />
-      <Stack.Screen name="users" />
-      <Stack.Screen name="clinics" />
-      <Stack.Screen name="dashboard" />
-      <Stack.Screen name="audit-logs" />
-      <Stack.Screen name="sync" options={{ headerShown: false }} />
-      <Stack.Screen name="profile" />
-    </Stack>
+    <View style={{ flex: 1 }}>
+      <OfflineBanner />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        <Stack.Screen name="patients" />
+        <Stack.Screen name="appointments" />
+        <Stack.Screen name="lab-requests" />
+        <Stack.Screen name="lab-results" />
+        <Stack.Screen name="prescriptions" />
+        <Stack.Screen name="deliveries" />
+        <Stack.Screen name="consultations" />
+        <Stack.Screen name="users" />
+        <Stack.Screen name="clinics" />
+        <Stack.Screen name="dashboard" />
+        <Stack.Screen name="audit-logs" />
+        <Stack.Screen name="sync" options={{ headerShown: false }} />
+        <Stack.Screen name="profile" />
+      </Stack>
+    </View>
   )
 }
 

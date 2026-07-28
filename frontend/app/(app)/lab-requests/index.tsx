@@ -1,15 +1,13 @@
-import React, { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native'
-import { Text, Chip, TextInput } from 'react-native-paper'
+import { Text, Chip } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
-import { clinicalApi } from '../../../src/core/api'
-import { useAuth } from '../../../src/features/auth'
 import { useQuery } from '@tanstack/react-query'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing } from '../../../src/constants'
 import { SkeletonList } from '../../../src/components/ui/Skeleton'
-import { router } from 'expo-router'
-import type { LabRequest, LabRequestStatus } from '../../../src/types'
+import { clinicalApi } from '../../../src/core/api/clinicalApi'
+import type { LabRequestStatus } from '../../../src/types'
 
 const STATUS_CONFIG: Record<LabRequestStatus, { color: string; icon: string }> = {
   REQUESTED: { color: '#FFC107', icon: 'time' },
@@ -17,14 +15,19 @@ const STATUS_CONFIG: Record<LabRequestStatus, { color: string; icon: string }> =
 }
 
 export default function LabRequestsScreen() {
-  const { hasRole } = useAuth()
   const [statusFilter, setStatusFilter] = useState('')
-  const canCreate = hasRole('CLINIC_STAFF', 'SPECIALIST', 'ADMIN')
+  const [refreshing, setRefreshing] = useState(false)
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['lab-requests', statusFilter],
     queryFn: () => clinicalApi.listLabRequests({ status: statusFilter || undefined }),
   })
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }, [refetch])
 
   const requests = data?.lab_requests || []
   const requested = requests.filter(r => r.status === 'REQUESTED').length
@@ -47,7 +50,14 @@ export default function LabRequestsScreen() {
 
       <ScrollView
         style={styles.container}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.primary]}
+            tintColor={Colors.primary}
+          />
+        }
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.statsRow}>

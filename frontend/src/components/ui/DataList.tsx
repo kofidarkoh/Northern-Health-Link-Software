@@ -1,4 +1,4 @@
-import React from 'react'
+import { type ReactNode } from 'react'
 import { View, StyleSheet, Platform } from 'react-native'
 import { Text, Searchbar, FAB, ActivityIndicator } from 'react-native-paper'
 import { Colors, Spacing } from '../../constants'
@@ -17,14 +17,12 @@ interface DataListProps<T> {
   renderMeta?: (item: T) => string
   keyExtractor: (item: T) => string | number
   onPressItem?: (item: T) => void
-  onRefresh?: () => void
-  refreshing?: boolean
   onRetry?: () => void
   emptyTitle?: string
   emptyMessage?: string
   fabLabel?: string
   onFabPress?: () => void
-  footer?: React.ReactNode
+  footer?: ReactNode
 }
 
 export function DataList<T>({
@@ -39,8 +37,6 @@ export function DataList<T>({
   renderMeta,
   keyExtractor,
   onPressItem,
-  onRefresh,
-  refreshing,
   onRetry,
   emptyTitle = 'No records',
   emptyMessage,

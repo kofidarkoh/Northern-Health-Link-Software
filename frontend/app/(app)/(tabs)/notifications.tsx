@@ -1,6 +1,5 @@
-import React from 'react'
 import { View, StyleSheet, Pressable, ScrollView, RefreshControl } from 'react-native'
-import { Text, Button } from 'react-native-paper'
+import { Text } from 'react-native-paper'
 import { Colors, Spacing } from '../../../src/constants'
 import { Ionicons } from '@expo/vector-icons'
 import { useNotifications, useMarkAllNotificationsRead } from '../../../src/features/notifications/useNotifications'
@@ -15,6 +14,19 @@ const TYPE_ICONS: Record<string, { icon: string; color: string }> = {
   delivery: { icon: 'bicycle', color: '#6F42C1' },
   system: { icon: 'settings', color: '#6C757D' },
   general: { icon: 'notifications', color: Colors.primary },
+}
+
+function getNotificationSeverity(type: string): 'critical' | 'warning' | 'info' {
+  const t = type?.toLowerCase() || ''
+  if (t.includes('emergency') || t.includes('urgent') || t.includes('failed')) return 'critical'
+  if (t.includes('appointment') || t.includes('delivery') || t.includes('prescription')) return 'warning'
+  return 'info'
+}
+
+const SEVERITY_CONFIG: Record<'critical' | 'warning' | 'info', { borderColor: string; backgroundColor: string; icon: string; iconColor: string }> = {
+  critical: { borderColor: '#DC3545', backgroundColor: '#FFF5F5', icon: 'alert-circle', iconColor: '#DC3545' },
+  warning: { borderColor: '#FFC107', backgroundColor: '#FFFBF0', icon: 'time', iconColor: '#FFC107' },
+  info: { borderColor: '#2D3E18', backgroundColor: '#F0F7F0', icon: 'information-circle', iconColor: '#2D3E18' },
 }
 
 function timeAgo(dateString: string): string {
@@ -89,10 +101,12 @@ export default function NotificationsScreen() {
           {notifications.map(n => {
             const isUnread = !n.read_at
             const typeCfg = (n.notification_type && TYPE_ICONS[n.notification_type]) || TYPE_ICONS.general
+            const severity = getNotificationSeverity(n.notification_type || n.title || '')
+            const sevCfg = SEVERITY_CONFIG[severity]
             return (
-              <View key={n.id} style={[styles.card, isUnread && styles.cardUnread]}>
+              <View key={n.id} style={[styles.card, isUnread && styles.cardUnread, { borderLeftWidth: 3, borderLeftColor: sevCfg.borderColor, backgroundColor: sevCfg.backgroundColor }]}>
                 <View style={[styles.iconCircle, { backgroundColor: typeCfg.color + '15' }]}>
-                  <Ionicons name={typeCfg.icon as any} size={20} color={typeCfg.color} />
+                  <Ionicons name={sevCfg.icon as any} size={20} color={sevCfg.iconColor} />
                 </View>
                 <View style={styles.cardBody}>
                   <View style={styles.cardHeader}>

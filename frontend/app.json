@@ -5,10 +5,13 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
-    "userInterfaceStyle": "light",
+    "userInterfaceStyle": "automatic",
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.northernhealthlink.app"
+      "bundleIdentifier": "com.northernhealthlink.app",
+      "infoPlist": {
+        "NSFaceIDUsageDescription": "Authenticate to access patient data"
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -18,10 +21,23 @@
         "monochromeImage": "./assets/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.northernhealthlink.app"
+      "package": "com.northernhealthlink.app",
+      "usesCleartextTraffic": false,
+      "networkSecurityConfig": "./config/network-security-config.xml"
     },
     "web": {
       "favicon": "./assets/favicon.png"
-    }
+    },
+    "plugins": [
+      "expo-router",
+      "expo-secure-store",
+      "expo-status-bar",
+      [
+        "expo-local-authentication",
+        {
+          "faceIDPermission": "Allow Northern Health Link to use Face ID for authentication."
+        }
+      ]
+    ]
   }
 }

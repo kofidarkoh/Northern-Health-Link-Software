@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { StyleSheet, View, ScrollView, RefreshControl, Platform } from 'react-native'
-import { Text, FAB, Chip, TextInput } from 'react-native-paper'
+import { useState, useCallback } from 'react'
+import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native'
+import { Text, FAB, Chip, TextInput, Button } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
 import { patientsApi } from '../../../src/core/api'
 import { useAuth } from '../../../src/features/auth'
@@ -9,7 +9,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing } from '../../../src/constants'
 import { SkeletonList } from '../../../src/components/ui/Skeleton'
 import { router } from 'expo-router'
-import type { Patient } from '../../../src/types'
+
 
 const GENDER_COLORS: Record<string, string> = {
   Male: '#17A2B8',
@@ -21,6 +21,7 @@ export default function PatientsScreen() {
   const { hasRole } = useAuth()
   const [search, setSearch] = useState('')
   const [genderFilter, setGenderFilter] = useState('')
+  const [refreshing, setRefreshing] = useState(false)
   const canEdit = hasRole('CLINIC_STAFF', 'ADMIN')
 
   const { data, isLoading, refetch } = useQuery({
@@ -31,6 +32,12 @@ export default function PatientsScreen() {
       per_page: 50,
     }),
   })
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }, [refetch])
 
   const patients = data?.patients || []
   const filtered = patients
@@ -55,7 +62,14 @@ export default function PatientsScreen() {
 
       <ScrollView
         style={styles.container}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.primary]}
+            tintColor={Colors.primary}
+          />
+        }
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.statsRow}>
@@ -113,9 +127,13 @@ export default function PatientsScreen() {
         </ScrollView>
 
         {filtered.length === 0 ? (
-          <View style={styles.empty}>
-            <Ionicons name="people-outline" size={48} color={Colors.textLight} />
-            <Text style={styles.emptyTitle}>No patients found</Text>
+          <View style={styles.emptyContainer}>
+            <Ionicons name="people-outline" size={64} color={Colors.textTertiary} />
+            <Text style={styles.emptyTitle}>No patients yet</Text>
+            <Text style={styles.emptySubtitle}>Tap the + button to register your first patient</Text>
+            <Button mode="contained" onPress={() => router.push('/(app)/patients/new')} style={{ marginTop: 16, backgroundColor: Colors.primary }}>
+              Register Patient
+            </Button>
           </View>
         ) : (
           filtered.map(patient => {
@@ -210,7 +228,25 @@ const styles = StyleSheet.create({
   chip: { marginRight: Spacing.xs },
 
   empty: { alignItems: 'center', paddingVertical: Spacing.xxl, gap: Spacing.sm },
-  emptyTitle: { fontSize: 16, fontWeight: '600', color: Colors.textSecondary },
+
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.xl,
+    gap: 8,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.text,
+    marginTop: 12,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
 
   card: {
     flexDirection: 'row',

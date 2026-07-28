@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { StyleSheet, ScrollView, KeyboardAvoidingView, Platform, View, Image } from 'react-native'
 import { TextInput, Button, Text, Checkbox } from 'react-native-paper'
 import { router } from 'expo-router'
@@ -144,6 +144,7 @@ export default function LoginScreen() {
             style={styles.button}
             theme={{ roundness: 14 }}
             accessibilityLabel="Sign in"
+            accessibilityHint="Signs you into your account"
           >
             Sign In
           </Button>
@@ -151,6 +152,11 @@ export default function LoginScreen() {
           <View style={styles.helpRow}>
             <Ionicons name="information-circle-outline" size={14} color={Colors.textLight} />
             <Text style={styles.helpText}>Contact your admin if you forgot your User ID</Text>
+          </View>
+
+          <View style={styles.trustBadge}>
+            <Ionicons name="shield-checkmark" size={14} color={Colors.primary} />
+            <Text style={styles.trustText}>Secure & HIPAA Compliant</Text>
           </View>
         </View>
 
@@ -273,6 +279,24 @@ const styles = StyleSheet.create({
     marginTop: Spacing.md,
   },
   helpText: { fontSize: 12, color: Colors.textLight, fontWeight: '500' },
+
+  trustBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    gap: 6,
+    marginTop: Spacing.lg,
+    paddingVertical: 8,
+    paddingHorizontal: 16,
+    backgroundColor: '#E8F5E9',
+    borderRadius: 20,
+    alignSelf: 'center',
+  },
+  trustText: {
+    fontSize: 12,
+    color: Colors.primary,
+    fontWeight: '600',
+  },
 
   footer: { alignItems: 'center', marginTop: Spacing.md },
   footerPill: {

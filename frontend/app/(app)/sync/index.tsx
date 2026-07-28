@@ -1,6 +1,6 @@
-import React, { useCallback } from 'react'
+import { useCallback } from 'react'
 import { View, ScrollView, StyleSheet, Alert } from 'react-native'
-import { Text, Button, Chip, Divider, IconButton } from 'react-native-paper'
+import { Text, Button, Chip, IconButton } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing } from '../../../src/constants'
 import { Screen, PageHeader } from '../../../src/components'

@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { StyleSheet, View, ScrollView, RefreshControl, Platform, Pressable } from 'react-native'
+import { useState } from 'react'
+import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native'
 import { Text, TextInput, Button, FAB, Portal, Modal } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
 import { adminApi } from '../../../src/core/api/adminApi'
@@ -8,7 +8,6 @@ import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing } from '../../../src/constants'
 import { SkeletonList } from '../../../src/components/ui/Skeleton'
 import { getApiErrorMessage } from '../../../src/utils/apiError'
-import type { Clinic } from '../../../src/types'
 
 export default function ClinicsScreen() {
   const [searchQuery, setSearchQuery] = useState('')

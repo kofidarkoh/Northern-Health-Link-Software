@@ -1,4 +1,3 @@
-import React from 'react'
 import { View, StyleSheet, Image } from 'react-native'
 import { Button, Text } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'

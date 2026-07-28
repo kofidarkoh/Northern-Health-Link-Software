@@ -1,13 +1,12 @@
-import React, { useState } from 'react'
-import { StyleSheet, ScrollView, View, Alert, Platform } from 'react-native'
-import { Text, Avatar, Button, TextInput, Divider, Chip, Switch, Portal, Modal } from 'react-native-paper'
+import { useState } from 'react'
+import { StyleSheet, ScrollView, View } from 'react-native'
+import { Text, Avatar, Button, TextInput, Switch, Portal, Modal } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
 import { adminApi } from '../../../src/core/api/adminApi'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { useLocalSearchParams, router } from 'expo-router'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing } from '../../../src/constants'
-import { getApiErrorMessage } from '../../../src/utils/apiError'
 import type { User, UserRole } from '../../../src/types'
 
 const ROLE_COLORS: Record<UserRole, string> = {

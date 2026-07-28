@@ -41,28 +41,34 @@ def create_tables():
         db.close()
         logger.info("Database tables created successfully")
 
-        _migrate_fcm_token()
+        _migrate_columns()
     except Exception as e:
         logger.exception("Failed to create database tables: %s", e)
         raise
 
 
-def _migrate_fcm_token():
-    """Add fcm_token column to users table if it doesn't exist."""
+def _add_column_if_missing(db, table, column, col_type):
+    cursor = db.execute_sql(
+        "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS "
+        f"WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = '{table}' AND COLUMN_NAME = '{column}'"
+    )
+    if cursor.fetchone()[0] == 0:
+        db.execute_sql(f"ALTER TABLE {table} ADD COLUMN {column} {col_type}")
+        logger.info("Added %s column to %s table", column, table)
+
+
+def _migrate_columns():
+    """Add missing columns to existing tables."""
     try:
         db = get_database()
         if db_proxy.obj is None:
             db_proxy.initialize(db)
-        cursor = db.execute_sql(
-            "SELECT COUNT(*) FROM INFORMATION_SCHEMA.COLUMNS "
-            "WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'users' AND COLUMN_NAME = 'fcm_token'"
-        )
-        if cursor.fetchone()[0] == 0:
-            db.execute_sql("ALTER TABLE users ADD COLUMN fcm_token VARCHAR(255) NULL")
-            logger.info("Added fcm_token column to users table")
+        _add_column_if_missing(db, 'users', 'fcm_token', 'VARCHAR(255) NULL')
+        _add_column_if_missing(db, 'users', 'security_question', 'VARCHAR(200) NULL')
+        _add_column_if_missing(db, 'users', 'security_answer', 'VARCHAR(200) NULL')
         db.close()
     except Exception as e:
-        logger.warning("fcm_token migration skipped: %s", e)
+        logger.warning("Column migration skipped: %s", e)
 
 
 __all__ = [

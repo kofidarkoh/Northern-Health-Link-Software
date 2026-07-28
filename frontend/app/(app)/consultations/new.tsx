@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native'
 import { Text, TextInput, Button, SegmentedButtons } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
@@ -9,11 +9,12 @@ import { Colors, Spacing } from '../../../src/constants'
 import { clinicalApi } from '../../../src/core/api'
 import { router, useLocalSearchParams } from 'expo-router'
 import { getApiErrorMessage } from '../../../src/utils/apiError'
+import { ImageUpload } from '../../../src/components/ui/ImageUpload'
 
 type NoteType = 'INITIAL' | 'FOLLOW_UP' | 'REFERRAL'
 
 export default function NewConsultationScreen() {
-  const { hasRole, user } = useAuth()
+  const { hasRole } = useAuth()
   const qc = useQueryClient()
   const params = useLocalSearchParams<{ appointment_id?: string }>()
 
@@ -24,6 +25,7 @@ export default function NewConsultationScreen() {
   const [recommendations, setRecommendations] = useState('')
   const [treatmentInstructions, setTreatmentInstructions] = useState('')
   const [referralNotes, setReferralNotes] = useState('')
+  const [photoUri, setPhotoUri] = useState<string | null>(null)
   const [error, setError] = useState('')
 
   const mutation = useMutation({
@@ -170,6 +172,15 @@ export default function NewConsultationScreen() {
               />
             </View>
           )}
+
+          <View style={styles.sectionCard}>
+            <Text style={styles.sectionTitle}>Attachments</Text>
+            <ImageUpload
+              label="Consultation Image (optional)"
+              imageUri={photoUri}
+              onImageSelected={(uri) => setPhotoUri(uri)}
+            />
+          </View>
 
           {error ? (
             <View style={styles.errorBox}>

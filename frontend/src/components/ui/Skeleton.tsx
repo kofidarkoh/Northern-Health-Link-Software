@@ -1,5 +1,5 @@
-import React, { useEffect, useRef } from 'react'
-import { View, StyleSheet, Animated, Platform } from 'react-native'
+import { useEffect, useRef } from 'react'
+import { View, StyleSheet, Animated } from 'react-native'
 import { Colors, Spacing } from '../../constants'
 
 interface SkeletonProps {

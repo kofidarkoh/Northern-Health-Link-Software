@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { StyleSheet, View, ScrollView, RefreshControl, Platform } from 'react-native'
+import { useState, useCallback } from 'react'
+import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native'
 import { Text, TextInput, Button, FAB, Portal, Modal } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
 import { prescriptionsApi, patientsApi } from '../../../src/core/api'
@@ -10,13 +10,14 @@ import { Colors, Spacing } from '../../../src/constants'
 import { SkeletonList } from '../../../src/components/ui/Skeleton'
 import { getApiErrorMessage } from '../../../src/utils/apiError'
 import { useFormValidation, required } from '../../../src/hooks/useFormValidation'
-import type { Prescription } from '../../../src/types'
+
 
 export default function PrescriptionsScreen() {
   const { hasRole } = useAuth()
   const qc = useQueryClient()
   const [search, setSearch] = useState('')
   const [modalVisible, setModalVisible] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
   const isSpecialist = hasRole('SPECIALIST')
 
   const [patientId, setPatientId] = useState('')
@@ -47,6 +48,12 @@ export default function PrescriptionsScreen() {
     queryKey: ['prescriptions', search],
     queryFn: () => prescriptionsApi.list({ patient_id: search || undefined }),
   })
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }, [refetch])
 
   const mutation = useMutation({
     mutationFn: () =>
@@ -86,7 +93,14 @@ export default function PrescriptionsScreen() {
 
       <ScrollView
         style={styles.container}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.primary]}
+            tintColor={Colors.primary}
+          />
+        }
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.statsRow}>
@@ -116,9 +130,13 @@ export default function PrescriptionsScreen() {
         </View>
 
         {prescriptions.length === 0 ? (
-          <View style={styles.empty}>
-            <Ionicons name="medkit" size={48} color={Colors.textLight} />
-            <Text style={styles.emptyTitle}>No prescriptions found</Text>
+          <View style={styles.emptyContainer}>
+            <Ionicons name="medkit-outline" size={64} color={Colors.textTertiary} />
+            <Text style={styles.emptyTitle}>No prescriptions yet</Text>
+            <Text style={styles.emptySubtitle}>Create your first prescription to get started</Text>
+            <Button mode="contained" onPress={() => { setModalVisible(true); setFormError('') }} style={{ marginTop: 16, backgroundColor: Colors.primary }}>
+              Create Prescription
+            </Button>
           </View>
         ) : (
           prescriptions.map(rx => (
@@ -325,7 +343,25 @@ const styles = StyleSheet.create({
   searchInput: { flex: 1, backgroundColor: 'transparent', fontSize: 14 },
 
   empty: { alignItems: 'center', paddingVertical: Spacing.xxl, gap: Spacing.sm },
-  emptyTitle: { fontSize: 16, fontWeight: '600', color: Colors.textSecondary },
+
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.xl,
+    gap: 8,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.text,
+    marginTop: 12,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
 
   card: {
     flexDirection: 'row',

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { StyleSheet, ScrollView, KeyboardAvoidingView, Platform, View } from 'react-native'
 import { TextInput, Button, Text } from 'react-native-paper'
 import { router } from 'expo-router'

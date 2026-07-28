@@ -1,23 +1,27 @@
-import React, { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native'
 import { Text, TextInput } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
-import { clinicalApi } from '../../../src/core/api'
-import { useAuth } from '../../../src/features/auth'
 import { useQuery } from '@tanstack/react-query'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing } from '../../../src/constants'
 import { SkeletonList } from '../../../src/components/ui/Skeleton'
-import type { LabResult } from '../../../src/types'
+import { clinicalApi } from '../../../src/core/api/clinicalApi'
 
 export default function LabResultsScreen() {
-  const { hasRole } = useAuth()
   const [search, setSearch] = useState('')
+  const [refreshing, setRefreshing] = useState(false)
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['lab-results', search],
     queryFn: () => clinicalApi.listLabResults({ patient_id: search || undefined }),
   })
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }, [refetch])
 
   const results = data?.lab_results || []
 
@@ -38,7 +42,14 @@ export default function LabResultsScreen() {
 
       <ScrollView
         style={styles.container}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.primary]}
+            tintColor={Colors.primary}
+          />
+        }
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.statsRow}>

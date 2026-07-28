@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
-import { StyleSheet, ScrollView, View, Platform } from 'react-native'
-import { Text, TextInput, Button, Chip, Portal, Modal, Divider } from 'react-native-paper'
+import { useState } from 'react'
+import { StyleSheet, ScrollView, View } from 'react-native'
+import { Text, TextInput, Button, Portal, Modal } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
 import { adminApi } from '../../../src/core/api/adminApi'
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
@@ -276,6 +276,7 @@ export default function CreateUserScreen() {
             buttonColor={selectedRole?.color || Colors.primary}
             style={styles.actionBtn}
             accessibilityLabel="Create user"
+            accessibilityHint="Creates a new user account"
           >
             Create {selectedRole?.label || 'User'}
           </Button>

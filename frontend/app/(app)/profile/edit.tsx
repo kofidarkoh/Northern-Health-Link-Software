@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native'
 import { Text, TextInput, Button } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
@@ -14,7 +14,7 @@ import { useFormValidation, required } from '../../../src/hooks/useFormValidatio
 export default function EditProfileScreen() {
   const qc = useQueryClient()
 
-  const { data: profile, isLoading } = useQuery<User>({
+  const { data: profile } = useQuery<User>({
     queryKey: ['profile'],
     queryFn: profileApi.getProfile,
   })
@@ -23,7 +23,7 @@ export default function EditProfileScreen() {
   const [phone, setPhone] = useState('')
   const [apiError, setApiError] = useState('')
 
-  const { validate, getFieldError, clearFieldError, clearAllErrors, hasErrors } = useFormValidation(
+  const { validate, getFieldError, clearFieldError, clearAllErrors } = useFormValidation(
     {
       fullName: required('Full name'),
     },
@@ -155,6 +155,7 @@ export default function EditProfileScreen() {
             icon="checkmark-circle"
             style={styles.submitBtn}
             accessibilityLabel="Save changes"
+            accessibilityHint="Saves your profile changes"
           >
             Save Changes
           </Button>

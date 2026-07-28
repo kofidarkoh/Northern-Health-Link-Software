@@ -7,7 +7,7 @@ import { useAuth } from '../../../src/features/auth'
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing } from '../../../src/constants'
-import { router, useLocalSearchParams } from 'expo-router'
+import { useLocalSearchParams } from 'expo-router'
 import { getApiErrorMessage } from '../../../src/utils/apiError'
 
 export default function ConsultationDetailScreen() {

@@ -1,4 +1,3 @@
-import React from 'react'
 import { ScrollView, StyleSheet, View, Platform } from 'react-native'
 import { Text, Button, Divider } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'

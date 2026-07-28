@@ -1,5 +1,4 @@
-import React from 'react'
-import { StyleSheet, View, ScrollView, RefreshControl, Platform, Pressable } from 'react-native'
+import { StyleSheet, View, ScrollView, RefreshControl, Pressable } from 'react-native'
 import { Screen, PageHeader } from '../../../src/components'
 import { adminApi } from '../../../src/core/api/adminApi'
 import { useQuery } from '@tanstack/react-query'

@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { View, StyleSheet, ScrollView } from 'react-native'
 import { Text, TextInput, Button, SegmentedButtons } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
@@ -10,6 +10,7 @@ import { Colors, Spacing } from '../../../src/constants'
 import { router } from 'expo-router'
 import { getApiErrorMessage } from '../../../src/utils/apiError'
 import { useFormValidation, required } from '../../../src/hooks/useFormValidation'
+import { ImageUpload } from '../../../src/components/ui/ImageUpload'
 
 export default function NewPatientScreen() {
   const { user, hasRole } = useAuth()
@@ -21,6 +22,7 @@ export default function NewPatientScreen() {
   const [district, setDistrict] = useState('')
   const [history, setHistory] = useState('')
   const [emergency, setEmergency] = useState('')
+  const [photoUri, setPhotoUri] = useState<string | null>(null)
   const [error, setError] = useState('')
 
   const { validate, getFieldError, clearFieldError, clearAllErrors } = useFormValidation(
@@ -170,6 +172,17 @@ export default function NewPatientScreen() {
           </View>
         </View>
 
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Patient Photo</Text>
+          <View style={styles.sectionCard}>
+            <ImageUpload
+              label="Patient Photo (optional)"
+              imageUri={photoUri}
+              onImageSelected={(uri) => setPhotoUri(uri)}
+            />
+          </View>
+        </View>
+
         {error ? (
           <View style={styles.errorBox}>
             <Ionicons name="alert-circle" size={16} color={Colors.error} />
@@ -190,6 +203,7 @@ export default function NewPatientScreen() {
           }}
           style={styles.submitBtn}
           accessibilityLabel="Register patient"
+          accessibilityHint="Creates a new patient record"
         >
           Register Patient
         </Button>

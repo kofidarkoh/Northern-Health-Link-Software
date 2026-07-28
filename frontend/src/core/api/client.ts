@@ -1,13 +1,27 @@
 import axios, { AxiosError, InternalAxiosRequestConfig } from 'axios'
 import { getToken, setToken, getRefreshToken, deleteToken, deleteRefreshToken, deleteStoredUser } from '../../features/auth/tokenStorage'
+import { showToast } from '../../utils/toast'
+import { Platform } from 'react-native'
 
 const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL || 'http://localhost:5000'
+
+const isProduction = process.env.EXPO_PUBLIC_APP_ENV === 'production'
 
 export const apiClient = axios.create({
   baseURL: API_BASE_URL,
   timeout: 15000,
   headers: { 'Content-Type': 'application/json' },
 })
+
+if (isProduction && Platform.OS !== 'web') {
+  apiClient.interceptors.request.use((config) => {
+    if (config.url && !config.url.startsWith('https://')) {
+      console.warn('[Security] Blocking non-HTTPS request in production:', config.url)
+      return Promise.reject(new Error('Production requests must use HTTPS'))
+    }
+    return config
+  })
+}
 
 let isRefreshing = false
 let failedQueue: Array<{ resolve: (t: string) => void; reject: (e: unknown) => void }> = []
@@ -36,6 +50,14 @@ apiClient.interceptors.response.use(
   (r) => r,
   async (error: AxiosError) => {
     const original = error.config as InternalAxiosRequestConfig & { _retry?: boolean }
+
+    if (error.response?.status === 429) {
+      const data = error.response.data as any
+      const message = data?.message || 'Too many requests. Please try again later.'
+      showToast('Rate Limited', message)
+      return Promise.reject(error)
+    }
+
     if (error.response?.status !== 401 || original._retry) return Promise.reject(error)
 
     if (isRefreshing) {

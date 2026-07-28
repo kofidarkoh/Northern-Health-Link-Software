@@ -5,11 +5,9 @@ from flask import Flask, jsonify, request
 from app.config import config
 from app.extensions import init_extensions, socketio, limiter
 from app.database import get_database, db_proxy, close_database
+from app.logging_config import setup_logging
 
-logging.basicConfig(
-    level=logging.INFO,
-    format='%(asctime)s %(levelname)s %(name)s: %(message)s'
-)
+setup_logging()
 logger = logging.getLogger(__name__)
 
 

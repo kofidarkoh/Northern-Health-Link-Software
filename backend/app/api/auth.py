@@ -234,22 +234,54 @@ def change_password():
 @limiter.limit("3 per minute")
 def forgot_password():
     data = request.get_json()
-    if not data or not data.get('email'):
-        return jsonify({'error': 'Email is required'}), 400
+    if not data or not data.get('user_id'):
+        return jsonify({'error': 'User ID is required'}), 400
 
-    email = data['email'].strip().lower()
-    if not validate_email_format(email):
-        return jsonify({'error': 'Invalid email format'}), 400
+    user_id = data['user_id'].strip().upper()
 
     from app.models.user import User
-    user = User.get_or_none(User.email == email)
+    user = User.get_or_none(User.user_id == user_id)
 
-    if user:
-        code = secrets.token_hex(3).upper()
-        cache.set(f'reset_{email}', code, timeout=900)
-        logger.info("Password reset code for %s: %s", email, code)
+    if not user or not user.security_question:
+        return jsonify({'error': 'User not found or security question not set'}), 404
 
-    return jsonify({'message': 'If an account exists with that email, a reset code has been sent.'}), 200
+    return jsonify({
+        'message': 'Security question retrieved',
+        'security_question': user.security_question,
+        'user_id': user_id
+    }), 200
+
+
+@auth_bp.route('/verify-security-answer', methods=['POST'])
+@limiter.limit("5 per minute")
+def verify_security_answer():
+    data = request.get_json()
+    if not data:
+        return jsonify({'error': 'No data provided'}), 400
+
+    user_id = data.get('user_id', '').strip().upper()
+    answer = data.get('answer', '').strip().lower()
+
+    if not user_id or not answer:
+        return jsonify({'error': 'User ID and answer are required'}), 400
+
+    from app.models.user import User
+    user = User.get_or_none(User.user_id == user_id)
+
+    if not user or not user.security_answer:
+        return jsonify({'error': 'User not found'}), 404
+
+    if user.security_answer.strip().lower() != answer:
+        return jsonify({'error': 'Incorrect answer'}), 401
+
+    code = secrets.token_hex(3).upper()
+    cache.set(f'reset_{user_id}', code, timeout=900)
+    logger.info("Password reset code for %s: %s", user_id, code)
+
+    return jsonify({
+        'message': 'Answer verified. A reset code has been generated.',
+        'reset_code': code
+    }), 200
 
 
 @auth_bp.route('/reset-password', methods=['POST'])
@@ -259,17 +291,14 @@ def reset_password():
     if not data:
         return jsonify({'error': 'No data provided'}), 400
 
-    email = data.get('email', '').strip().lower()
+    user_id = data.get('user_id', '').strip().upper()
     code = data.get('code', '').strip().upper()
     new_password = data.get('new_password', '')
 
-    if not email or not code or not new_password:
-        return jsonify({'error': 'Email, code, and new password are required'}), 400
+    if not user_id or not code or not new_password:
+        return jsonify({'error': 'User ID, code, and new password are required'}), 400
 
-    if not validate_email_format(email):
-        return jsonify({'error': 'Invalid email format'}), 400
-
-    stored_code = cache.get(f'reset_{email}')
+    stored_code = cache.get(f'reset_{user_id}')
     if not stored_code or stored_code != code:
         return jsonify({'error': 'Invalid or expired reset code'}), 400
 
@@ -278,15 +307,15 @@ def reset_password():
         return jsonify({'error': 'Weak password', 'details': password_errors}), 400
 
     from app.models.user import User
-    user = User.get_or_none(User.email == email)
+    user = User.get_or_none(User.user_id == user_id)
     if not user:
         return jsonify({'error': 'User not found'}), 404
 
     user.password_hash = hash_password(new_password)
     user.save()
 
-    cache.delete(f'reset_{email}')
+    cache.delete(f'reset_{user_id}')
 
-    record_audit(user.id, 'PASSWORD_RESET', 'users', user.id, {'email': email})
+    record_audit(user.id, 'PASSWORD_RESET', 'users', user.id, {'user_id': user_id})
 
     return jsonify({'message': 'Password reset successfully'}), 200

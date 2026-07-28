@@ -24,6 +24,8 @@ class User(BaseModel):
     speciality = CharField(max_length=120, null=True)
     active = BooleanField(default=True, null=False)
     fcm_token = CharField(max_length=255, null=True)
+    security_question = CharField(max_length=200, null=True)
+    security_answer = CharField(max_length=200, null=True)
 
     class Meta:
         table_name = 'users'
@@ -39,6 +41,7 @@ class User(BaseModel):
             'role': self.role,
             'speciality': self.speciality,
             'active': self.active,
+            'security_question': self.security_question,
             'created_at': self.created_at.isoformat() if self.created_at else None,
             'updated_at': self.updated_at.isoformat() if self.updated_at else None
         }

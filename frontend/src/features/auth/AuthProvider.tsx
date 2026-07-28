@@ -6,6 +6,7 @@ import { setToken, setRefreshToken, setStoredUser, clearAuth, getToken, getRefre
 import { loginApi, getCurrentUserApi, logoutApi } from './authApi'
 import { useSessionTimeout } from '../../hooks/useSessionTimeout'
 import { usePushNotifications } from '../../hooks/usePushNotifications'
+import { useBackgroundAuth } from '../../hooks/useBackgroundAuth'
 
 interface AuthState {
   user: User | null
@@ -62,8 +63,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     ])
   }, [logout])
 
+  const handleBackgroundAuthRequired = useCallback(() => {
+    Alert.alert('Re-authentication Required', 'Please log in again to continue.', [
+      { text: 'OK', onPress: () => { logout(); router.replace('/(auth)/login') } }
+    ])
+  }, [logout])
+
   useSessionTimeout(handleSessionTimeout)
   usePushNotifications()
+  useBackgroundAuth({
+    enabled: state.isAuthenticated,
+    promptMessage: 'Verify your identity to continue',
+    onAuthRequired: handleBackgroundAuthRequired,
+  })
 
   const hasRole = useCallback((...roles: UserRole[]) => !!state.user && roles.includes(state.user.role), [state.user])
 

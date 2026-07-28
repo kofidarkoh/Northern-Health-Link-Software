@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { StyleSheet, View, ScrollView } from 'react-native'
 import { Text, Button } from 'react-native-paper'
 import { Screen, PageHeader, LoadingView, ErrorView } from '../../../src/components'

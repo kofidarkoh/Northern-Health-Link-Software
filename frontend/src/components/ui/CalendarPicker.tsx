@@ -1,7 +1,6 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo } from 'react'
 import { View, StyleSheet, Pressable, ScrollView } from 'react-native'
 import { Text, IconButton } from 'react-native-paper'
-import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing } from '../../constants'
 
 interface CalendarPickerProps {

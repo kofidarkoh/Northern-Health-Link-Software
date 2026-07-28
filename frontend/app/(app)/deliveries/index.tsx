@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react'
+import { useState, useMemo, useCallback } from 'react'
 import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native'
 import { Text, Button, Chip, TextInput, FAB, Portal, Modal } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'
@@ -10,7 +10,7 @@ import { Colors, Spacing } from '../../../src/constants'
 import { SkeletonList } from '../../../src/components/ui/Skeleton'
 import { optimizeRoute, type OptimizedRoute } from '../../../src/utils/routeOptimization'
 import { getApiErrorMessage } from '../../../src/utils/apiError'
-import type { Delivery, DeliveryStatus } from '../../../src/types'
+import type { DeliveryStatus } from '../../../src/types'
 
 const STATUS_CONFIG: Record<DeliveryStatus, { color: string; icon: string }> = {
   PENDING: { color: '#FFC107', icon: 'time' },
@@ -30,6 +30,7 @@ export default function DeliveriesScreen() {
   const [statusModalVisible, setStatusModalVisible] = useState(false)
   const [activeDeliveryId, setActiveDeliveryId] = useState<number | null>(null)
   const [showRoute, setShowRoute] = useState(false)
+  const [refreshing, setRefreshing] = useState(false)
 
   const [prescriptionId, setPrescriptionId] = useState('')
   const [riderId, setRiderId] = useState('')
@@ -48,6 +49,12 @@ export default function DeliveriesScreen() {
     queryKey: ['deliveries', statusFilter],
     queryFn: () => deliveriesApi.list({ status: statusFilter || undefined }),
   })
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }, [refetch])
 
   const createMutation = useMutation({
     mutationFn: () =>
@@ -107,7 +114,14 @@ export default function DeliveriesScreen() {
 
       <ScrollView
         style={styles.container}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.primary]}
+            tintColor={Colors.primary}
+          />
+        }
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.statsRow}>
@@ -200,9 +214,13 @@ export default function DeliveriesScreen() {
         </ScrollView>
 
         {deliveries.length === 0 ? (
-          <View style={styles.empty}>
-            <Ionicons name="cube-outline" size={48} color={Colors.textLight} />
-            <Text style={styles.emptyTitle}>No deliveries found</Text>
+          <View style={styles.emptyContainer}>
+            <Ionicons name="bicycle-outline" size={64} color={Colors.textTertiary} />
+            <Text style={styles.emptyTitle}>No deliveries yet</Text>
+            <Text style={styles.emptySubtitle}>Request your first delivery to get started</Text>
+            <Button mode="contained" onPress={() => { setModalVisible(true); setFormError('') }} style={{ marginTop: 16, backgroundColor: Colors.primary }}>
+              Request Delivery
+            </Button>
           </View>
         ) : (
           deliveries.map(delivery => {
@@ -406,7 +424,25 @@ const styles = StyleSheet.create({
   chip: { marginRight: Spacing.xs },
 
   empty: { alignItems: 'center', paddingVertical: Spacing.xxl, gap: Spacing.sm },
-  emptyTitle: { fontSize: 16, fontWeight: '600', color: Colors.textSecondary },
+
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.xl,
+    gap: 8,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.text,
+    marginTop: 12,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
 
   card: {
     flexDirection: 'row',

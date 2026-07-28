@@ -1,14 +1,14 @@
-import React, { useState } from 'react'
-import { StyleSheet, View, ScrollView, RefreshControl, Platform } from 'react-native'
+import { useState, useCallback } from 'react'
+import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native'
 import { Screen, PageHeader, UserCard } from '../../../src/components'
 import { adminApi } from '../../../src/core/api/adminApi'
 import { useQuery } from '@tanstack/react-query'
-import { Text, Chip, Searchbar, FAB } from 'react-native-paper'
+import { Text, Chip, Searchbar, FAB, Button } from 'react-native-paper'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing } from '../../../src/constants'
 import { SkeletonList } from '../../../src/components/ui/Skeleton'
 import { router } from 'expo-router'
-import type { User, UserRole } from '../../../src/types'
+import type { UserRole } from '../../../src/types'
 
 const ROLES: UserRole[] = ['ADMIN', 'CLINIC_STAFF', 'SPECIALIST', 'LAB_OFFICER', 'RIDER']
 
@@ -23,11 +23,18 @@ const ROLE_COLORS: Record<UserRole, string> = {
 export default function UsersScreen() {
   const [searchQuery, setSearchQuery] = useState('')
   const [roleFilter, setRoleFilter] = useState<UserRole | 'ALL'>('ALL')
+  const [refreshing, setRefreshing] = useState(false)
 
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['admin-users', roleFilter],
     queryFn: () => adminApi.listUsers(roleFilter !== 'ALL' ? { role: roleFilter } : undefined),
   })
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }, [refetch])
 
   const allUsers = data?.users || []
   const filteredUsers = allUsers.filter(user =>
@@ -64,7 +71,14 @@ export default function UsersScreen() {
 
       <ScrollView
         style={styles.container}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.primary]}
+            tintColor={Colors.primary}
+          />
+        }
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.statsGrid}>
@@ -141,10 +155,13 @@ export default function UsersScreen() {
         </View>
 
         {filteredUsers.length === 0 ? (
-          <View style={styles.empty}>
-            <Ionicons name="people-outline" size={48} color={Colors.textLight} />
-            <Text style={styles.emptyText}>No users found</Text>
-            <Text style={styles.emptyHint}>Try a different search or filter</Text>
+          <View style={styles.emptyContainer}>
+            <Ionicons name="person-add-outline" size={64} color={Colors.textTertiary} />
+            <Text style={styles.emptyTitle}>No users yet</Text>
+            <Text style={styles.emptySubtitle}>Tap the + button to create your first user</Text>
+            <Button mode="contained" onPress={() => router.push('/(app)/users/create')} style={{ marginTop: 16, backgroundColor: Colors.primary }}>
+              Create User
+            </Button>
           </View>
         ) : (
           filteredUsers.map(user => (
@@ -235,6 +252,25 @@ const styles = StyleSheet.create({
   empty: { alignItems: 'center', paddingVertical: Spacing.xxl, gap: Spacing.sm },
   emptyText: { fontSize: 16, fontWeight: '600', color: Colors.textSecondary },
   emptyHint: { fontSize: 13, color: Colors.textLight },
+
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.xl,
+    gap: 8,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.text,
+    marginTop: 12,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
   fab: {
     position: 'absolute',
     right: Spacing.lg,

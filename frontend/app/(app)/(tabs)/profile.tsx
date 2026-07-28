@@ -243,6 +243,10 @@ export default function ProfileScreen() {
         <Text style={styles.footerText}>Northern Health Link v{APP_VERSION}</Text>
       </View>
 
+      <Text style={styles.sessionInfo}>
+        Your session expires after 30 minutes of inactivity
+      </Text>
+
       <View style={{ height: 20 }} />
 
       <Portal>
@@ -395,6 +399,14 @@ const styles = StyleSheet.create({
     marginTop: Spacing.xl,
   },
   footerText: { fontSize: 12, color: Colors.textLight, fontWeight: '500' },
+
+  sessionInfo: {
+    fontSize: 11,
+    color: Colors.textTertiary,
+    textAlign: 'center',
+    marginTop: Spacing.lg,
+    fontStyle: 'italic',
+  },
 
   modal: { backgroundColor: Colors.surface, padding: Spacing.xl, margin: Spacing.lg, borderRadius: 20, alignItems: 'center' },
   modalIcon: { width: 64, height: 64, borderRadius: 32, backgroundColor: Colors.errorLight, justifyContent: 'center', alignItems: 'center', marginBottom: Spacing.md },

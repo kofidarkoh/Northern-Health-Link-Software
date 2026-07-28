@@ -23,6 +23,35 @@ export const Colors = {
   shadow: 'rgba(0, 0, 0, 0.08)',
 }
 
+export const DarkColors = {
+  primary: '#4A5F2E',
+  primaryLight: '#6B8A3E',
+  primaryDark: '#2D3E18',
+  secondary: '#FFD54F',
+  secondaryLight: '#FFE082',
+  secondaryDark: '#FFC107',
+  background: '#121212',
+  backgroundAlt: '#1E1E1E',
+  surface: '#1E1E1E',
+  text: '#F5F5F5',
+  textSecondary: '#B0B0B0',
+  textLight: '#757575',
+  border: '#2C2C2C',
+  error: '#EF5350',
+  errorLight: '#3D1A1A',
+  success: '#6B8A3E',
+  successLight: '#1A2D10',
+  warning: '#FFD54F',
+  white: '#FFFFFF',
+  black: '#000000',
+  textTertiary: '#757575',
+  shadow: 'rgba(0, 0, 0, 0.3)',
+}
+
+export function getColors(isDark: boolean) {
+  return isDark ? DarkColors : Colors
+}
+
 export const Spacing = {
   xs: 4,
   sm: 8,

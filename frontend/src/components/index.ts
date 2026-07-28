@@ -1,6 +1,7 @@
 export { Screen } from './ui/Screen'
 export { PageHeader, ListRow } from './ui/PageHeader'
 export { StatusChip } from './ui/StatusChip'
+export { StatusBadge, getStatusVariant } from './ui/StatusBadge'
 export { EmptyState, LoadingView, ErrorView } from './ui/Feedback'
 export { DataList, DetailCard } from './ui/DataList'
 export { StatGrid } from './ui/StatGrid'

@@ -1,16 +1,15 @@
-import React, { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { StyleSheet, View, ScrollView, RefreshControl } from 'react-native'
-import { Text, Chip, TextInput } from 'react-native-paper'
+import { Text, Chip, Button } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
-import { clinicalApi } from '../../../src/core/api'
-import { useAuth } from '../../../src/features/auth'
 import { useQuery } from '@tanstack/react-query'
 import { Ionicons } from '@expo/vector-icons'
 import { Colors, Spacing } from '../../../src/constants'
 import { SkeletonList } from '../../../src/components/ui/Skeleton'
 import { router } from 'expo-router'
 import { formatDate } from '../../../src/utils/format'
-import type { Appointment, AppointmentStatus } from '../../../src/types'
+import { clinicalApi } from '../../../src/core/api/clinicalApi'
+import type { AppointmentStatus } from '../../../src/types'
 
 const STATUS_CONFIG: Record<AppointmentStatus, { color: string; icon: string }> = {
   REQUESTED: { color: '#FFC107', icon: 'time' },
@@ -23,21 +22,25 @@ const STATUS_CONFIG: Record<AppointmentStatus, { color: string; icon: string }> 
 const STATUSES: AppointmentStatus[] = ['REQUESTED', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED', 'CANCELLED']
 
 export default function AppointmentsScreen() {
-  const { hasRole } = useAuth()
   const [statusFilter, setStatusFilter] = useState('')
-  const canCreate = hasRole('CLINIC_STAFF', 'ADMIN')
-
+  const [refreshing, setRefreshing] = useState(false)
   const { data, isLoading, refetch } = useQuery({
     queryKey: ['appointments', statusFilter],
     queryFn: () => clinicalApi.listAppointments({ status: statusFilter || undefined, per_page: 50 }),
   })
 
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true)
+    await refetch()
+    setRefreshing(false)
+  }, [refetch])
+
   const appointments = data?.appointments || []
 
-  const statusCounts = STATUSES.reduce((acc, s) => {
+  const statusCounts = STATUSES.reduce<Record<string, number>>((acc, s) => {
     acc[s] = appointments.filter(a => a.status === s).length
     return acc
-  }, {} as Record<string, number>)
+  }, {})
 
   if (isLoading) {
     return (
@@ -56,7 +59,14 @@ export default function AppointmentsScreen() {
 
       <ScrollView
         style={styles.container}
-        refreshControl={<RefreshControl refreshing={isLoading} onRefresh={refetch} colors={[Colors.primary]} />}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            colors={[Colors.primary]}
+            tintColor={Colors.primary}
+          />
+        }
         showsVerticalScrollIndicator={false}
       >
         <View style={styles.statsRow}>
@@ -99,9 +109,13 @@ export default function AppointmentsScreen() {
         </ScrollView>
 
         {appointments.length === 0 ? (
-          <View style={styles.empty}>
-            <Ionicons name="calendar-outline" size={48} color={Colors.textLight} />
-            <Text style={styles.emptyTitle}>No appointments found</Text>
+          <View style={styles.emptyContainer}>
+            <Ionicons name="calendar-outline" size={64} color={Colors.textTertiary} />
+            <Text style={styles.emptyTitle}>No appointments yet</Text>
+            <Text style={styles.emptySubtitle}>Book your first appointment to get started</Text>
+            <Button mode="contained" onPress={() => router.push('/(app)/appointments/new')} style={{ marginTop: 16, backgroundColor: Colors.primary }}>
+              Book Appointment
+            </Button>
           </View>
         ) : (
           appointments.map(appt => {
@@ -171,7 +185,25 @@ const styles = StyleSheet.create({
   chip: { marginRight: Spacing.xs },
 
   empty: { alignItems: 'center', paddingVertical: Spacing.xxl, gap: Spacing.sm },
-  emptyTitle: { fontSize: 16, fontWeight: '600', color: Colors.textSecondary },
+
+  emptyContainer: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: Spacing.xl,
+    gap: 8,
+  },
+  emptyTitle: {
+    fontSize: 18,
+    fontWeight: '700',
+    color: Colors.text,
+    marginTop: 12,
+  },
+  emptySubtitle: {
+    fontSize: 14,
+    color: Colors.textSecondary,
+    textAlign: 'center',
+  },
 
   card: {
     flexDirection: 'row',

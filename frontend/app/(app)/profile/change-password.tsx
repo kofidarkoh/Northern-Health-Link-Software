@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { View, StyleSheet, ScrollView, KeyboardAvoidingView, Platform, Alert } from 'react-native'
 import { Text, TextInput, Button } from 'react-native-paper'
 import { Screen, PageHeader } from '../../../src/components'
@@ -19,7 +19,7 @@ export default function ChangePasswordScreen() {
   const [showConfirm, setShowConfirm] = useState(false)
   const [apiError, setApiError] = useState('')
 
-  const { validate, getFieldError, clearFieldError, clearAllErrors, hasErrors } = useFormValidation(
+  const { validate, getFieldError, clearFieldError, clearAllErrors } = useFormValidation(
     {
       currentPassword: (v) => {
         if (!v) return 'Current password is required'
@@ -166,6 +166,7 @@ export default function ChangePasswordScreen() {
             icon="lock-closed"
             style={styles.submitBtn}
             accessibilityLabel="Change password"
+            accessibilityHint="Updates your password"
           >
             Change Password
           </Button>
