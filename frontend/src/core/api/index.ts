@@ -1,0 +1,8 @@
+export { patientsApi } from './patientsApi'
+export { clinicalApi } from './clinicalApi'
+export { prescriptionsApi } from './prescriptionsApi'
+export { deliveriesApi } from './deliveriesApi'
+export { adminApi } from './adminApi'
+export { notificationsApi } from './notificationsApi'
+export { profileApi } from './profileApi'
+export { apiClient } from './client'

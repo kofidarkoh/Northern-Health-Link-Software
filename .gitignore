@@ -1,0 +1,44 @@
+# Dependencies
+node_modules/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+dist/
+build/
+*.egg-info/
+
+# Expo / React Native
+frontend/android/
+frontend/ios/
+frontend/.expo/
+frontend/web-build/
+
+# Backend uploads
+backend/uploads/
+
+# Logs
+*.log
+
+# Database
+*.db
+*.sqlite3
