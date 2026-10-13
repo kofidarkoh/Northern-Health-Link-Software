@@ -21,7 +21,10 @@ def _parse_database_url(url):
     parsed = urlparse(url)
     if parsed.scheme not in ('mysql', 'mysql+pymysql'):
         raise ValueError(
-            "Unsupported DATABASE_URL scheme %r (expected mysql://)" % (parsed.scheme,)
+            "Invalid DATABASE_URL (got scheme %r): expected "
+            "mysql://user:pass@host:port/db — check the value in the "
+            "Render dashboard (or leave it empty to use MYSQL_* vars)."
+            % (parsed.scheme,)
         )
     return {
         'database': unquote(parsed.path.lstrip('/') or 'defaultdb'),
@@ -70,7 +73,8 @@ def get_database():
     else:
         # Single-URL form (Render fromDatabase, Aiven connection string, …)
         # takes precedence; discrete MYSQL_* vars are the fallback.
-        db_url = os.environ.get('DATABASE_URL')
+        # .strip(): Render injects unfilled sync:false vars as empty strings.
+        db_url = (os.environ.get('DATABASE_URL') or '').strip()
         if db_url:
             conn = _parse_database_url(db_url)
         else:
