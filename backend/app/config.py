@@ -1,8 +1,35 @@
 import os
 import secrets
+import tempfile
 from dotenv import load_dotenv
 
 load_dotenv()
+
+
+def _resolve_mysql_ssl_ca():
+    """CA bundle path for MySQL TLS, or None.
+
+    Accepts a file path (MYSQL_SSL_CA) or inline PEM text
+    (MYSQL_SSL_CA_CONTENT). File deploys like Render have no place to put a
+    cert file, so pasting the Aiven CA certificate into the dashboard as
+    MYSQL_SSL_CA_CONTENT is the recommended path — it is materialised to a
+    temp file here. Returns None when neither is set (plain connection).
+    """
+    path = os.environ.get('MYSQL_SSL_CA')
+    if path:
+        return path
+    pem = os.environ.get('MYSQL_SSL_CA_CONTENT')
+    if pem and 'BEGIN CERTIFICATE' in pem:
+        if '\n' not in pem:
+            pem = pem.replace('\\n', '\n')
+        if not pem.endswith('\n'):
+            pem += '\n'
+        ca_file = os.path.join(tempfile.gettempdir(), 'nhls-mysql-ca.pem')
+        with open(ca_file, 'w') as f:
+            f.write(pem)
+        os.chmod(ca_file, 0o600)
+        return ca_file
+    return None
 
 
 class Config:
@@ -16,7 +43,7 @@ class Config:
     MYSQL_DATABASE = os.environ.get('MYSQL_DATABASE', 'nhls_dev')
     MYSQL_USER = os.environ.get('MYSQL_USER', 'root')
     MYSQL_PASSWORD = os.environ.get('MYSQL_PASSWORD', '')
-    MYSQL_SSL_CA = os.environ.get('MYSQL_SSL_CA')
+    MYSQL_SSL_CA = _resolve_mysql_ssl_ca()
 
     REDIS_URL = os.environ.get('REDIS_URL', 'redis://localhost:6379/0')
     # Opt-in flag for SocketIO Redis message queue. Only needed when running
