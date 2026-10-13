@@ -57,18 +57,23 @@ Northern Health Link enables rural clinics to:
 
 ```
 NHLS/
-├── backend/
-│   ├── app/
-│   │   ├── api/              # Flask blueprints (auth, patients, clinical, prescriptions, deliveries, notifications, admin, lab)
-│   │   ├── models/           # Peewee ORM models (11 tables)
-│   │   ├── services/         # Business logic (auth, patient, audit, notification)
-│   │   ├── schemas/          # Marshmallow validators
-│   │   └── middleware/       # RBAC decorators
-│   ├── admin_ui/             # htmx admin web console (templates, static, views)
-│   ├── backup.sh             # Dated mysqldump backups with pruning
-│   ├── seed.py               # Database seeder
-│   ├── wsgi.py               # Production entry (gevent)
-│   └── .env                  # Environment config
+├── app/                  # Flask backend package
+│   ├── api/              # Blueprints (auth, patients, clinical, prescriptions, deliveries, notifications, admin, lab)
+│   ├── models/           # Peewee ORM models
+│   ├── services/         # Business logic (auth, patient, audit, notification)
+│   ├── schemas/          # Marshmallow validators
+│   └── middleware/       # RBAC decorators
+├── admin_ui/             # htmx admin web console (templates, static, views)
+├── migrations/           # Versioned schema migrations (`python migrate.py migrate`)
+├── uploads/              # Lab result files + avatars (gitignored, ephemeral on Render)
+├── wsgi.py               # Production entry (gevent)
+├── run.py                # Dev entry
+├── migrate.py            # Migration runner
+├── seed.py               # Database seeder
+├── backup.sh             # Dated mysqldump backups with pruning
+├── requirements.txt      # Python dependencies (repo root so Render finds them)
+├── render.yaml           # Render blueprint
+└── .env                  # Environment config
 ├── frontend/
 │   ├── app/                  # Expo Router screens
 │   │   ├── (auth)/           # Login
@@ -278,7 +283,7 @@ npx expo start
 - Per-query freshness tuning (reference data 10 min, live lists 60s) + immutable caching for uploads
 
 ### Operations
-- `backend/backup.sh` — dated `mysqldump` backups with 14-day pruning
+- `backup.sh` — dated `mysqldump` backups with 14-day pruning
 
 ### Route Optimization (Riders)
 - Nearest-neighbor TSP algorithm
@@ -301,7 +306,7 @@ npx tsc --noEmit
 
 Backend verification is done via Flask test client + headless browser passes
 (login → role flows → admin console). No automated pytest suite is checked in yet
-(`backend/tests/` is a placeholder).
+(`tests/` is a placeholder).
 
 ## Future Enhancements
 

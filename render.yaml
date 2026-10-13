@@ -1,6 +1,6 @@
 # ============================================
 # Northern Health Link — Render Blueprint
-# Generated from backend/.env keys (dev values intentionally NOT copied:
+# Generated from .env keys (dev values intentionally NOT copied:
 # localhost/MySQL-localhost/placeholder secrets must not ship to prod),
 # plus DATABASE_URL / MYSQL_SSL_CA_CONTENT (see MySQL notes below).
 # Docs: https://render.com/docs/blueprint-spec
@@ -24,23 +24,21 @@ services:
     runtime: python
     plan: free # needs Starter+ if you attach the uploads disk below
     numInstances: 1 # keep at 1: SocketIO broadcasts need SOCKETIO_MESSAGE_QUEUE=1 to span instances
-    rootDir: backend
     buildCommand: pip install -r requirements.txt && python migrate.py migrate
     # Free tier has no preDeployCommand, so versioned migrations
     # (migrations/versions/) run as the last build step instead. The runner
     # is idempotent (schema_migrations-tracked, safe=True), so re-running
-    # on every build is harmless. NOTE: build runs in rootDir (backend/),
-    # but start runs from the REPO ROOT — hence `cd` below.
+    # on every build is harmless.
     # start.sh binds 127.0.0.1:5000 — Render requires 0.0.0.0:$PORT.
-    startCommand: cd backend && gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --timeout 120 -b 0.0.0.0:$PORT wsgi:app
+    startCommand: gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --timeout 120 -b 0.0.0.0:$PORT wsgi:app
     healthCheckPath: /health
     # ---- Persistent uploads (lab result PHI) ----
-    # Render disks are ephemeral by default: redeploys WIPE backend/uploads/.
+    # Render disks are ephemeral by default: redeploys WIPE uploads/.
     # For real PHI, uncomment the disk and point UPLOAD_FOLDER at it
     # (requires a paid instance type).
     # disk:
     #   name: nhls-uploads
-    #   mountPath: /opt/render/project/src/backend/uploads
+    #   mountPath: /opt/render/project/src/uploads
     #   sizeGB: 1
     envVars:
       - key: PYTHON_VERSION
@@ -73,7 +71,7 @@ services:
       # (Aiven console → service → CA certificate; Render dashboard accepts
       # multiline values). The app writes it to a temp file at boot.
       # Alternative: commit ca.pem (public cert, safe) and set MYSQL_SSL_CA
-      # to its path — resolves relative to backend/ (see startCommand).
+      # to its path — resolves relative to the repo root (see startCommand).
       - key: MYSQL_SSL_CA
         sync: false
       - key: MYSQL_SSL_CA_CONTENT
@@ -98,9 +96,9 @@ services:
         value: INFO
 
       # ---- Uploads ----
-      # Default is relative (backend/uploads/lab_results) = EPHEMERAL on Render.
+      # Default is relative (uploads/lab_results) = EPHEMERAL on Render.
       # With the disk above enabled, change this value to the absolute path:
-      # /opt/render/project/src/backend/uploads/lab_results
+      # /opt/render/project/src/uploads/lab_results
       - key: UPLOAD_FOLDER
         value: uploads/lab_results
       - key: MAX_CONTENT_LENGTH

@@ -6,7 +6,7 @@
 - Reports existing clinic/patient district strings that match no
   master-list entry (left untouched, for admin decision).
 
-Usage: python3 migrate_clinics.py   (from backend/)
+Usage: python3 migrate_clinics.py   (from repo root)
 """
 import logging
 

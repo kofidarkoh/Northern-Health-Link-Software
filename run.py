@@ -55,7 +55,7 @@ def _stale_run_py_pids():
 
     Matches on parsed argv, not substrings: argv[0] must be a python binary
     and one of the script args must be exactly run.py. A substring check
-    would also match the parent `bash -c '... python backend/run.py ...'`
+    would also match the parent `bash -c '... python run.py ...'`
     wrapper and the backend would SIGKILL its own launcher (suicide).
     """
     me = os.getpid()

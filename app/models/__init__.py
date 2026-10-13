@@ -74,7 +74,7 @@ def _migrate_columns():
     """DEPRECATED fallback — do not call from ``create_tables``.
 
     Boot-time ALTER patching is superseded by versioned migrations in
-    ``backend/migrations/versions/`` (run via ``python migrate.py migrate``;
+    ``migrations/versions/`` (run via ``python migrate.py migrate``;
     0002_legacy_extra_columns covers exactly these columns idempotently).
     Kept only so old deployment notes referencing it stay searchable.
     """

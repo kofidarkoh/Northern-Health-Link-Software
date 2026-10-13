@@ -9,7 +9,9 @@ __pycache__/
 # Environment
 .env
 .env.local
+.env.production
 .env.*.local
+*.env
 
 # IDE
 .vscode/
@@ -28,6 +30,8 @@ build/
 *.egg-info/
 
 venv/
+.venv/
+env/
 
 # Expo / React Native
 frontend/android/
@@ -35,8 +39,8 @@ frontend/ios/
 frontend/.expo/
 frontend/web-build/
 
-# Backend uploads
-backend/uploads/
+# Backend uploads (lab result PHI + avatars — never commit)
+uploads/
 
 # Logs
 *.log
@@ -44,3 +48,4 @@ backend/uploads/
 # Database
 *.db
 *.sqlite3
+backups/

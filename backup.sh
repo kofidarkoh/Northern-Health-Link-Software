@@ -1,6 +1,6 @@
 #!/bin/bash
 # NHLS database backup — dated mysqldump, prunes backups older than 14 days.
-# Usage: ./backup.sh  (run from backend/ or repo root; mariadb-client required)
+# Usage: ./backup.sh  (run from repo root; mariadb-client required)
 set -e
 cd "$(dirname "$0")"
 

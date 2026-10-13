@@ -1,7 +1,7 @@
 """Seed ~100 linked demo records for testing (patients + appointments + labs + Rx + deliveries + notifications).
 
 Usage:
-    ../venv/bin/python seed_demo100.py [--count 100] [--seed 42]
+    ./venv/bin/python seed_demo100.py [--count 100] [--seed 42]
 
 Safe: reuses existing clinics/users from seed.py, skips if demo data already present
 unless --force is passed. All FK constraints respected.
