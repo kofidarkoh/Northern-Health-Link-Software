@@ -1,0 +1,1636 @@
+this full project doc, keep the mysql, peewee and flask api in mind
+“GUI FOR NORTHERN HEALTH LINK SOFTWARE”
+Project submitted in partial fulfillment of the requirements for the
+award of the Degree of
+Bachelor of Computer Applications
+of
+SASTRA DEEMED UNIVERSITY
+Submitted by
+“ENOCH YAW GODSEYE-AGYAPONG”
+Register No: 22223070273
+Under the Supervision and Guidance of
+DR. L. PRABAHARAN
+School of Computing
+SASTRA Deemed University
+(Under section 3 of the UGC Act, 1956)
+Thanjavur – 613 401
+June – 2026School of Computing
+SASTRA University
+(U asnder section 3 of the UGC Act, 1956)
+Thanjavur – 613 401
+Bonafide Certificate
+Certified that this project report entitled
+“GUI FOR NORTHERN HEALTH LINK SOFTWARE”
+Is a bonafide record of work done by
+“ENOCH YAW GODSEYE-AGYAPONG”
+Register No. 22223070273
+In partial fulfillment of the requirements for award of the
+Degree of Bachelor of Computer Applications
+During the year 2022 – 2026
+Project Guide
+Submitted for Project viva-voce examination held on --------
+Examiner -I
+Examiner-II
+iiAcknowledgements
+I would like to thank our Honourable Chancellor Prof. R. Sethuraman for providing me with an
+opportunity and the necessary infrastructure for carrying out this project as a part of our curriculum.
+I would like to thank our Honourable Vice-Chancellor Dr. S. Vaidhyasubramaniam and Dr. S.
+Swaminathan, Dean, Planning & Development, for the encouragement and strategic support at every step of
+our college life.
+I extend my sincere thanks to Dr.R. Chandramouli, Registrar, SASTRA Deemed to be University for
+providing the opportunity to pursue this project.
+I extend my heartfelt thanks to Dr.V.S.Shankar Sriram, Dean, School of Computing, Dr.R.Muthaiah,
+Associate Dean-Research, School of Computing Dr.K.Ramkumar, Associate Dean-Academics, School of
+Computing Dr.D.Manivannan, Associate Dean-Infrastructure School of Computing and Dr.R.Alageswaran,
+Associate Dean-Student Welfare, School of Computing for their motivation and support offered in
+materializing this project.
+My guide Dr. L. Prabaharan, School of Computing was the driving force behind this whole idea from
+the start. Her deep insight in the field and invaluable suggestions helped me in making progress throughout
+our project work. I also thank the project review panel members for their valuable comments and insights
+which made this project better.
+I would like to extend my gratitude to all the teaching and non-teaching faculties of the School of
+Computing who have either directly or indirectly helped me in the completion of the project.
+I gratefully acknowledge all the contributions and encouragement from my family and friends resulting
+in the successful completion of this project. I thank you all for providing me an opportunity to showcase my
+skills through project.
+iiiSYNOPSIS
+The project, “GUI for Northern Health Link Software,” aims to design a mobile-first
+graphical user interface for a healthcare platform that connects rural clinics in Northern
+Ghana with medical specialists based mainly in Tamale. Patients from many rural districts
+such as Karaga and Gushegu, often travel more than four hours to access basic specialist
+consultation and diagnostic services. This delay in healthcare access, contributes to
+avoidable deaths, worsens health outcomes, and reduces economic productivity as patients
+and caregivers spend significant time and money seeking care.
+Northern Health Link platform proposes a practical digital solution that will enable rural
+clinics to consult specialists through secure video calls, share patient information, and
+receive expert medical guidance without requiring patients to travel long distances. The
+platform will also support the delivery of laboratory results and prescribed medication
+through a coordinated motorcycle fleet, making healthcare access faster and more reliable
+for the underserved communities.
+The GUI will be designed with simplicity, speed, and accessibility in mind. Since many
+users may have limited digital experience or work in low-resource clinical settings, the
+interface will prioritize clear navigation, readable layouts, patient registration, appointment
+scheduling, video consultation, lab result tracking, prescription management, and delivery
+status updates.
+The expected outcome of the project is a user-friendly healthcare interface that improves
+communication between rural clinics and specialists, reduces unnecessary travel, speeds up
+diagnosis and treatment, and strengthens healthcare delivery across Northern Ghana.
+Ultimately, the project aims to support a more equitable health system where location is no
+longer a major barrier to receiving timely medical care.Table of Contents
+S.NO
+1
+CONTENT
+PG NO
+Introduction
+Problem Statement6–9
+2Software Project Plan
+Time Schedule for Various phases10 – 11
+3Functional requirements Analysis
+3.1 Functional requirements
+3.2 Non-functional requirements12 – 15
+4System Analysis
+Data Flow Diagram16 – 21
+5Design
+5.1 Front End Design
+5.2 Back End Design
+Coding22 – 29
+Testing44 – 49
+6
+7
+30 – 43
+7.1 Unit Testing
+7.2 Integration Testing
+7.3 Validation Testing
+7.4 Debugging
+8
+9
+10
+Implementation
+8.1 Problem Faced
+8.2 Lessons Learnt
+Future plans
+Bibliography
+50 – 53
+54 – 55
+56 – 57
+5INTRODUCTION
+61. Introduction
+Access to timely healthcare stills remain a major concern in rural and underserved
+communities, especially where specialist doctors, diagnostic facilities, and referral hospitals
+are concentrated in urban centres. Universal health coverage requires that people receive
+needed health services without excessive travel, delay, or financial hardship (World Health
+Organization [WHO] & World Bank, 2023). However, rural and remote populations often
+experience lower health workforce availability and weaker access to specialist care than
+urban populations (WHO, 2021).
+In Northern Ghana, the problem is more of a concern because many rural districts depend
+on Tamale for specialist consultation and advanced diagnostic services. According to the
+2021 Population and Housing Census, the Northern Region has a population of 2,310,939,
+with districts such as Karaga and Gushegu recording large rural populations (Ghana
+Statistical Service [GSS], 2021). Karaga has a population of 114,225, with about 73.9%
+living in rural areas, while Gushegu Municipal has a population of 153,965, with about
+76.4% living in rural areas (GSS, 2021). These figures show that a significant number of
+people live far away from the main urban health service hub.
+The project titled “GUI for Northern Health Link Software” seeks to respond to this
+challenge by designing a mobile-first graphical user interface for a digital healthcare
+platform. The platform will connect rural clinics to specialists through video consultation
+and support the movement of lab results and medication through a motorcycle delivery fleet.
+Digital health systems can improve health service delivery when they are properly designed
+around local health system needs, resources, and workflows (WHO, 2019). Similarly,
+computer-mediated medical consultation has been identified as a useful way to connect
+underserved Ghanaian health workers with wider medical expertise (Luk, Ho & Aoki, 2008).
+The proposed GUI will therefore concentrate on usability, simplicity, and accessibility for
+rural clinic staff, specialists, dispatch riders, and health administrators. Key functions will
+include patient registration, appointment scheduling, video consultation, lab result
+management, prescription handling, and delivery tracking. By reducing unnecessary travel
+and improving communication between rural clinics and specialists, Northern Health Link
+7can contribute to faster diagnosis, improved treatment decisions, and better healthcare access
+for rural communities in Northern Ghana.
+1.1 Problem Statement
+More than 70% of specialists in Northern Ghana provide their services in Tamale, leaving
+rural districts such as Karaga and Gushegu with limited direct access to specialist
+consultation. Patients in these districts often travel more than four hours to Tamale for basic
+diagnostics or specialist review. This creates delays in diagnosis and treatment, increases
+transport costs, and reduces productivity for patients and caregivers.
+The problem is worsened even by the rural nature of many districts in the Northern Region.
+For example, the majority of people in Karaga and Gushegu live in rural communities, where
+access to higher-level healthcare is more difficult (GSS, 2021). WHO (2021) observes that
+rural and remote communities often suffer from health worker shortages and maldistribution,
+which means that some populations are left behind even when health workers are available
+nationally. These access gaps can contribute to late treatment, poor health outcomes, and
+avoidable mortality.
+Although digital health interventions can support health system strengthening, they must be
+designed to fit real clinical workflows and local infrastructure constraints (WHO, 2019). At
+present, many rural clinics lack a unified, easy-to-use interface that allows them to request
+specialist support, conduct video consultations, manage diagnostic feedback, track
+prescriptions, and coordinate last-mile medication delivery. Therefore, there is a need for a
+mobile-first GUI that enables rural clinics in Northern Ghana to connect efficiently with
+specialists in Tamale while also supporting lab result and medication delivery.
+Main Aim
+To design and develop a mobile-first graphical user interface for Northern Health Link
+Software that connects rural clinics in Northern Ghana to specialists through video
+consultation and supports lab result, prescription, and medication delivery management.
+8Objectives:
+1. To identify the user requirements and workflow needs of rural clinic staff, specialists,
+patients, and motorcycle delivery personnel.
+2. To design a mobile-first GUI that supports patient registration, appointment
+scheduling, video consultation, lab result management, prescription handling, and
+delivery tracking.
+3. To evaluate the usability, accessibility, and effectiveness of the GUI in improving
+communication between rural clinics and specialists.
+9SOFTWARE PROJECT PLAN
+102. Software Project Plan
+Time Schedule for Various Phases
+Project Starting Date: 1st June, 2026
+Project Finishing Date: 30th June, 2026
+Description of the TaskNo. of days to complete
+Software requirements gathering4 to 5 days
+Software Analysis3 to 4 days
+Design5 to 8 days
+Implementation3 to 5 days
+Testing1 to 2 days
+Reports2 to 3 days
+Deployment2 to 3 days
+Future plan1 to 2 days
+11SOFTWARE REQUIREMENTS SPECIFICATION
+123. Software Requirements Specification
+The software requirements specification describes the functional and non-functional
+requirements of the Northern Health Link Software.
+3.1 Functional requirements
+The functional requirements specification describes the services, operations, and features
+that the Northern Health Link Software must provide to support remote healthcare delivery
+in rural districts of Northern Ghana. The system will serve rural clinic staff, specialists,
+laboratory personnel, motorcycle delivery riders, system administrators, and patients.
+1. User Registration and Login
+The system shall allow authorized users such as clinic staff, specialists, laboratory
+officers, dispatch riders, and administrators to create accounts and log in securely.
+2. Role-Based Access Control
+The system shall provide different access levels based on user roles. For example,
+clinic staff can register patients, specialists can review cases, and dispatch riders
+can update delivery status.
+3. Patient Registration
+The system shall allow clinic staff to register patients by capturing details such as
+name, age, gender, contact, district, medical history, and emergency contact.
+4. Patient Record Management
+The system shall allow authorized users to view, update, and retrieve patient
+medical records when needed.
+5. Appointment Scheduling
+The system shall allow rural clinics to book video consultation appointments with
+available specialists in Tamale.
+6. Video Consultation
+The system shall support real-time video communication between rural clinic staff,
+patients, and specialists.
+7. Specialist Consultation Notes
+The system shall allow specialists to record diagnosis, recommendations, referrals,
+and treatment instructions after consultation.
+8. Laboratory Request Management
+The system shall allow clinic staff or specialists to request laboratory tests for
+patients.
+9. Lab Result Upload and Viewing
+The system shall allow laboratory officers to upload test results and allow
+authorized clinic staff and specialists to view them.
+1310. Prescription Management
+The system shall allow specialists to prescribe medication digitally after
+consultation or lab review.
+11. Medication Delivery Request
+The system shall allow clinic staff to request medication delivery through the
+motorcycle fleet.
+12. Delivery Tracking
+The system shall allow dispatch riders to update delivery status, including pending,
+picked up, in transit, delivered, or failed delivery.
+13. Notifications and Alerts
+The system shall send alerts for appointment reminders, lab result availability,
+prescription updates, and delivery status changes.
+14. Search and Filtering
+The system shall allow users to search for patients, appointments, lab results,
+prescriptions, and deliveries using relevant filters.
+15. Dashboard and Reports
+The system shall provide dashboards showing appointments, pending consultations,
+lab results, prescriptions, deliveries, and system activity.
+16. Administrative Management
+The system shall allow administrators to manage users, clinics, specialists, delivery
+riders, and system settings.
+3.2 Non-functional requirements
+1. Usability
+The GUI shall be simple, mobile-first, and easy to use by clinic staff with limited
+technical experience.
+2. Performance
+The system shall load key pages quickly and respond to user actions within a
+reasonable time, even on low-bandwidth networks.
+3. Reliability
+The system shall operate consistently and minimize failures during important
+activities such as video consultation and lab result submission.
+4. Security
+The system shall protect patient records through secure login, password protection,
+role-based access, and encrypted data transmission.
+5. Privacy
+The system shall ensure that only authorized users can access sensitive patient
+information.
+6. Availability
+The system shall be available whenever rural clinics need to request consultations,
+access lab results, or track medication delivery.
+7. Scalability
+The system shall support future expansion to more clinics, districts, specialists, and
+delivery riders.
+148. Compatibility
+The GUI shall work on common mobile phones, tablets, and desktop browsers used
+by clinics and health workers.
+9. Accessibility
+The interface shall use readable text, clear buttons, simple icons, and good contrast
+to support different users.
+10. Maintainability
+The system shall be designed in a way that allows developers to update features, fix
+errors, and improve the platform easily.
+11. Data Integrity
+The system shall prevent loss, duplication, or unauthorized alteration of patient
+records, lab results, prescriptions, and delivery details.
+12. Backup and Recovery
+The system shall support regular data backup and recovery in case of system failure
+or accidental data loss.
+15SYSTEM ANALYSIS
+164. System Analysis
+4.1 System Overview
+Northern Health Link Software is a healthcare support platform designed to connect rural
+clinics like CHPS compounds and Health Centres in Northern Ghana with specialists,
+laboratory personnel, medication delivery riders, administrators, and patients. The system
+supports patient registration, remote consultations, laboratory request management, digital
+prescriptions, and medication delivery tracking.
+The main purpose of the system is to reduce delays in healthcare access for rural districts by
+allowing clinics to coordinate specialist care, review lab results, issue prescriptions, and
+monitor medicine delivery through a centralized digital platform.
+4.2 Systems Objective
+
+
+
+
+
+
+Provide secure access for clinic staff, specialists, laboratory officers, dispatch riders,
+and administrators.
+Create and maintain accurate patient records that can be accessed by authorized
+users.
+Support remote video consultations between rural clinics, patients, and specialists
+based in Tamale.
+Manage laboratory test requests, result uploads, digital prescriptions, and medicine
+delivery requests.
+Provide notifications, dashboards, search tools, and reports for operational
+monitoring.
+Protect patient privacy through role-based access control, authentication, and
+controlled data visibility.
+Table 1: Stakeholders and Users Roles
+User roleMain responsibilityKey data handled
+PatientReceives care, participates in consultations, and
+receives appointment or delivery updates.Personal details, consultation
+participation, notification information.
+Clinic staffRegisters patients, schedules consultations,
+requests lab tests, views results, and requests
+deliveries.Patient records, appointment requests,
+lab requests, prescription and delivery
+details.
+SpecialistReviews patient cases, conducts video
+consultations, records diagnosis, and issues
+prescriptions.Medical history, lab results,
+consultation notes, prescriptions,
+referrals.
+17Laboratory officerReceives lab requests and uploads patient test
+results.Lab request details, sample or test
+information, uploaded result files.
+Dispatch riderCollects medication and updates delivery
+progress.Delivery request, pickup status, transit
+status, delivery outcome.
+AdministratorManages users, roles, clinics, specialists, riders,
+settings, and system reports.User accounts, role permissions, clinic
+data, activity logs, reports.
+4.3 System Scope
+The system scope covers the digital workflow from patient registration at a rural clinic to
+specialist consultation, lab processing, prescription creation, and medication delivery
+tracking.
+Table 2: System Scope
+In scopeOutside the current scope
+Patient registration and patient record management.Direct hospital billing or insurance claims processing.
+Appointment scheduling and video consultation
+support.Full electronic medical record replacement for large
+hospitals.
+Lab request management, lab result upload, and
+authorized viewing.Laboratory equipment automation or machine-level
+result capture.
+Prescription creation and motorcycle medication
+delivery tracking.Inventory procurement and national pharmaceutical
+supply-chain management.
+Role-based dashboards, notifications, search, and
+administrative management.Offline-first synchronization unless added in a later
+phase.
+Table 3: Functional Decomposition
+ProcessDescriptionPrimary users
+1.0 User Login and
+Role AccessAuthenticates users and applies permissions based on role.All authorized users.
+2.0 Patient Registration
+and RecordsCaptures patient demographics, medical history, emergency
+contact, and district information.Clinic staff and
+authorized clinical
+users.
+3.0 Appointment and
+Video ConsultationBooks consultation appointments and supports real-time
+remote consultation.Clinic staff, patients,
+and specialists.
+4.0 Specialist Notes and
+PrescriptionRecords diagnosis, recommendations, referrals, treatment
+instructions, and prescriptions.Specialists.
+185.0 Laboratory Request
+and ResultsCreates lab requests, receives uploaded results, and makes
+results available to authorized users.Clinic staff,
+specialists, and lab
+officers.
+6.0 Medication
+Delivery TrackingCreates delivery requests and records delivery states such
+as pending, picked up, in transit, delivered, or failed.Clinic staff and
+dispatch riders.
+7.0 Notifications,
+Search and ReportsSends alerts, supports search/filtering, and produces
+dashboards and reports.Clinic staff,
+specialists, patients,
+administrators.
+8.0 Administrative
+ManagementMaintains users, clinics, specialists, dispatch riders, roles,
+and system settings.Administrators.
+Data storeContentsUsed by
+D1: User and Role
+DatabaseUser accounts, login credentials, role permissions, clinic
+assignment, specialist profile, rider profile.Login, RBAC,
+administration.
+D2: Patient Records
+DatabasePatient identity, contact details, district, medical history,
+emergency contact, record updates.Patient registration,
+consultation,
+prescription review.
+D3: Appointment and
+Consultation DatabaseAppointment schedule, video session metadata,
+consultation notes, referral information.Appointments, video
+consultation, specialist
+notes.
+D4: Lab Request and
+Result DatabaseTest requests, requested tests, patient test details, uploaded
+lab results.Clinic requests,
+specialist review, lab
+uploads.
+D5: Prescription
+DatabaseMedication name, dosage, duration, instructions,
+prescribing specialist, patient link.Prescription
+management, delivery
+requests.
+D6: Delivery DatabaseDelivery order, rider assignment, pickup status, transit
+status, delivery outcome.Medication delivery
+and tracking.
+D7: Report and Activity
+LogsDashboard counts, activity history, notification events,
+system monitoring data.Reports, dashboards,
+audit support.
+Table 4: Data Stores
+4.4 Data Flow Diagram
+The DFD shows how information moves between external users, the system processes, and
+the internal data stores. The Level 0 diagram presents the whole software as one process,
+while the Level 1 diagram breaks the software into the main functional processes required
+by the specification.
+19Figure 4.1. Level 0 DFD showing whole software as one process
+Figure 4.2. Level 1 diagram breaks the software into main functional requirements by specification
+204.5 Key Data Flow Narrative
+1. Clinic staff log in, register patients, book consultation appointments, request lab tests,
+and request medication delivery.
+2. Specialists access patient records, review lab results, conduct consultations, record
+notes, and create prescriptions.
+3. Laboratory officers receive test requests and upload test results for authorized clinical
+users to view.
+4. Dispatch riders receive delivery requests and update delivery status as medication
+moves from pickup to delivery.
+5. Administrators manage users, roles, clinics, specialists, riders, settings, dashboards,
+and activity reports.
+6. Notifications are generated from appointment, lab, prescription, and delivery events
+and sent to the relevant users.
+4.6 Non Functional Analysis
+The non-functional requirements define how well the system should perform and how
+safely it should protect healthcare information.
+Table 5: Non-functional Analysis
+Requirement areaAnalysis
+UsabilityThe interface should be simple, mobile-first, and suitable for clinic staff with limited
+technical experience.
+PerformanceKey pages should load quickly and remain usable on low-bandwidth networks.
+Reliability and
+availabilityThe platform should support important activities such as video consultation, lab
+result submission, and delivery tracking with minimal disruption.
+Security and privacySecure login, password protection, role-based access, and encrypted transmission
+should protect patient information.
+ScalabilityThe architecture should allow expansion to additional clinics, districts, specialists,
+laboratories, and riders.
+MaintainabilityThe system should be organized so developers can update features, fix errors, and
+improve the platform over time.
+Data integrity and
+recoveryThe system should prevent data loss, duplicate records, unauthorized changes, and
+support regular backup and recovery.
+21DESIGN
+225. Design
+This section describes the proposed front end and back end design for the Northern Health
+Link Software. The design uses TypeScript on both the client and server side to reduce
+programming inconsistency, improve maintainability, and allow shared validation models
+where appropriate.
+The system is designed as a mobile-first web application because rural clinic staff, dispatch
+riders, and health workers may use phones, tablets, or desktop browsers. The back end
+exposes secure APIs, applies role-based access control, stores structured healthcare data, and
+coordinates video consultation, laboratory, prescription, notification, and delivery
+workflows.
+5.1 Front End Design
+The front end was implemented as a responsive React application written in TypeScript.
+React is suitable because the system has several repeated interface patterns such as forms,
+patient cards, dashboards, status badges, tables, modal dialogs, and role-based navigation
+menus.
+5.1.1 Front End Design Principles
+ Mobile-first layout with large buttons, simple icons, readable text, and forms that
+work well on small screens.
+ Role-based navigation so each user sees only the screens needed for their job.
+ Clear status indicators for appointments, lab results, prescriptions, and delivery
+progress.
+ Offline-aware feedback such as loading states, retry messages, and saved form
+validation errors.
+ Accessible contrast, meaningful labels, and simple wording for clinic staff with
+limited technical experience.
+Table 6: Front End Screens and Components
+Screen / componentMain usersFunction
+Login screenAll authorized usersCollects credentials and receives a JWT token and role
+profile from the back end.
+23Role dashboardClinic staff, specialists,
+lab officers, riders,
+administratorsShows summary cards and shortcuts based on role
+permissions.
+Patient registration
+formClinic staffCaptures patient biodata, contact, district, medical
+history, and emergency contact.
+Appointment schedulerClinic staff and
+specialistsBooks consultation slots, checks specialist availability,
+and opens video sessions.
+Consultation workspaceSpecialists and clinic staffDisplays patient summary, video panel, consultation
+notes, lab results, and prescription actions.
+Lab result screenLab officers, clinic staff,
+specialistsAllows upload, review, and filtering of laboratory
+requests and results.
+Delivery tracking screenClinic staff and dispatch
+ridersShows delivery requests and allows riders to update
+delivery status.
+Admin consoleAdministratorsManages users, clinics, specialists, riders, roles, and
+settings.
+Figure 5.1. Front end navigation design showing role-based routing from login to system modules.
+5.1.2 Front End Consultation Process
+The consultation workflow begins with a clinic staff member logging in, registering or
+searching for a patient, booking an appointment, and opening a video consultation. The
+24specialist then records notes and creates prescriptions or lab requests. The interface presents
+each step as a guided workflow to reduce errors.
+Figure 5.2. Front end process for moving from patient registration to consultation outcome.
+5.1.3 Front End Route Design Example
+The following TypeScript-style route map shows how screens was grouped by user role.
+type UserRole = "CLINIC_STAFF" | "SPECIALIST" | "LAB_OFFICER" | "RIDER" | "ADMIN";
+const routesByRole: Record<UserRole, string[]> = {
+CLINIC_STAFF: ["/dashboard", "/patients", "/appointments", "/labs", "/prescriptions",
+"/deliveries"],
+SPECIALIST: ["/dashboard", "/consultations", "/labs", "/prescriptions"],
+LAB_OFFICER: ["/dashboard", "/lab-requests", "/lab-results"],
+RIDER: ["/dashboard", "/deliveries"],
+ADMIN: ["/dashboard", "/users", "/clinics", "/reports", "/settings"]
+};
+5.2 Back End Design
+The back end was implemented using TypeScript on Node.js with Express or NestJS
+sometimes. A modular service structure is recommended because the system has clear
+functional areas: authentication, patients, appointments, consultation notes, laboratory
+results, prescriptions, delivery tracking, notifications, reports, and administration.
+255.2.1 Back End Architecture
+The API gateway receives requests from the frontend, validates authentication tokens,
+checks user roles, and forwards each request to the correct domain service. Each service
+applies business rules before reading or writing to the database.
+Figure 5.3. Back end architecture showing API gateway, services, database, file storage, and external communication
+services.
+Table 7: Back End Services
+ServiceMain responsibilityExample endpoints
+Authentication and RBACHandles login, password hashing, JWT tokens,
+and role permissions.POST /auth/login, GET
+/auth/me
+Patient serviceCreates, updates, searches, and retrieves
+patient records.POST /patients, GET /patients,
+GET /patients/{id}
+Appointment serviceSchedules specialist consultations and tracks
+appointment status.POST /appointments, PATCH
+/appointments/{id}/status
+Consultation serviceStores specialist diagnosis, recommendations,
+referrals, and treatment instructions.POST /consultations/{id}/notes
+Laboratory serviceCreates test requests and manages uploaded lab
+results.POST /labs/requests, POST
+/labs/results
+26Prescription serviceCreates digital prescriptions and links them to
+patient and consultation records.POST /prescriptions, GET
+/prescriptions/{id}
+Delivery serviceCreates medication delivery requests and
+updates delivery status.POST /deliveries, PATCH
+/deliveries/{id}/status
+Notification serviceSends appointment, lab, prescription, and
+delivery alerts.POST /notifications/send, GET
+/notifications
+Reporting serviceBuilds dashboard counts and activity reports.GET /reports/dashboard
+5.2.2 Back End Request Processing
+Every protected request follows the same security process: authenticate the token, authorize
+the user role, validate the input, run the business rule, save or retrieve data, record an audit
+log, and return a clear response to the front end.
+Figure 5.4. Back end request-processing flow for protected healthcare actions.
+5.2.3 Database Design
+The database uses PostgreSQL tables with foreign-key relationships to protect data integrity.
+Patient-related data was linked through patient identifiers, appointment identifiers, and
+prescription or delivery identifiers.
+27Figure 5.5. Core database model showing major entities and relationships.
+5.2.3 Back End API Design Example
+The following TypeScript-style route example shows how the patient registration API can enforce
+authentication and role authorization.
+router.post(
+"/patients",
+authenticateJwt,
+authorize(["CLINIC_STAFF", "ADMIN"]),
+validateBody(createPatientSchema),
+async (req, res) => {
+const patient = await patientService.createPatient(req.body, req.user.id);
+await auditService.record("PATIENT_CREATED", req.user.id, patient.id);
+res.status(201).json(patient);
+}
+);
+5.2.4 Security and Data Protection Design
+
+
+
+
+
+Passwords are hashed using a secure password-hashing algorithm before storage.
+All communication between frontend and backend are use HTTPS/TLS encryption.
+JWT access tokens will identify the user, role, clinic assignment, and token expiry
+time.
+Role-based access control will be checked on every protected endpoint, not only in
+the frontend.
+Audit logs will record important actions such as patient creation, lab result upload,
+prescription creation, and delivery completion.
+28
+Database backups will be scheduled regularly to support recovery after system failure
+or accidental data loss.
+Table 8: Deployment Design
+Deployment componentRecommended design
+Frontend hostingHost the React build as a lightweight web application or PWA accessible from
+clinic browsers.
+Backend APIRun the Node.js/TypeScript API behind a secure reverse proxy with HTTPS
+enabled.
+DatabaseUse PostgreSQL with scheduled backups, restricted access, and encrypted
+connections.
+File storageStore lab result files in secured object storage or a protected server file system.
+MonitoringTrack API errors, failed login attempts, slow requests, and delivery or notification
+failures.
+29CODING
+6. Coding
+This section presents the main code and statements for implementing Northern Health Link
+Software. The code uses TypeScript for both the front end and back end, with PostgreSQL
+SQL statements for the database. The listings are organized by implementation layer to show
+how the real project was structured.
+The code enforces the key system requirements: secure login, role-based access control,
+patient registration, appointment scheduling, consultation notes, lab requests and results,
+prescriptions, medication delivery tracking, notifications, and audit logging.
+Figure 6.1. Coding workflow showing the connection between frontend code, backend routes, SQL statements, and
+audit/notification processing.
+Table 9: Programming Tools and File Structure
+AreaFiles / statementsPurpose
+Databaseschema.sql, seed.sqlCreates tables, relationships, indexes, and initial
+user or clinic records.
+Backendserver.ts, db.ts, middleware/auth.ts,
+routes/*.ts, services/*.tsImplements APIs, authentication, authorization,
+business rules, and audit logs.
+Frontendapi.ts, LoginPage.tsx, Dashboard.tsx,
+PatientRegistrationForm.tsx, styles.cssImplements user screens, API calls, role-based
+navigation, and form submission.
+Executionnpm scripts, curl statementsRuns the server and tests API endpoints during
+development.
+306.1 Database SQL Statements
+The following SQL statements create the main PostgreSQL database structure for the
+system.
+Listing 6.1. Database types, clinics, users, and patients
+CREATE EXTENSION pgcrypto;
+CREATE TYPE user_role AS ENUM (
+'CLINIC_STAFF',
+'SPECIALIST',
+'LAB_OFFICER',
+'RIDER',
+'ADMIN'
+);
+CREATE TYPE appointment_status AS ENUM (
+'REQUESTED',
+'SCHEDULED',
+'IN_PROGRESS',
+'COMPLETED',
+'CANCELLED'
+);
+CREATE TYPE delivery_status AS ENUM (
+'PENDING',
+'PICKED_UP',
+'IN_TRANSIT',
+'DELIVERED',
+'FAILED'
+);
+CREATE TABLE clinics (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+name VARCHAR(120) NOT NULL,
+district VARCHAR(120) NOT NULL,
+contact_phone VARCHAR(30),
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE users (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+clinic_id UUID REFERENCES clinics(id),
+full_name VARCHAR(120) NOT NULL,
+email VARCHAR(160) UNIQUE NOT NULL,
+password_hash TEXT NOT NULL,
+role user_role NOT NULL,
+speciality VARCHAR(120),
+active BOOLEAN NOT NULL DEFAULT TRUE,
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE patients (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+clinic_id UUID NOT NULL REFERENCES clinics(id),
+registered_by UUID NOT NULL REFERENCES users(id),
+full_name VARCHAR(140) NOT NULL,
+age INT CHECK (age >= 0),
+gender VARCHAR(20) NOT NULL,
+contact_phone VARCHAR(30),
+district VARCHAR(120) NOT NULL,
+medical_history TEXT,
+emergency_contact VARCHAR(160),
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+31Listing 6.2. Appointment, consultation, lab, and prescription tables
+CREATE TABLE appointments (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+patient_id UUID NOT NULL REFERENCES patients(id),
+clinic_id UUID NOT NULL REFERENCES clinics(id),
+specialist_id UUID NOT NULL REFERENCES users(id),
+appointment_time TIMESTAMP NOT NULL,
+status appointment_status NOT NULL DEFAULT 'REQUESTED',
+video_room_url TEXT,
+created_by UUID NOT NULL REFERENCES users(id),
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE consultation_notes (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+appointment_id UUID NOT NULL REFERENCES appointments(id),
+specialist_id UUID NOT NULL REFERENCES users(id),
+diagnosis TEXT NOT NULL,
+recommendations TEXT,
+referral_notes TEXT,
+treatment_instructions TEXT,
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE lab_requests (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+patient_id UUID NOT NULL REFERENCES patients(id),
+requested_by UUID NOT NULL REFERENCES users(id),
+test_type VARCHAR(140) NOT NULL,
+clinical_reason TEXT,
+status VARCHAR(30) NOT NULL DEFAULT 'REQUESTED',
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE lab_results (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+lab_request_id UUID NOT NULL REFERENCES lab_requests(id),
+uploaded_by UUID NOT NULL REFERENCES users(id),
+result_summary TEXT NOT NULL,
+file_url TEXT,
+uploaded_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE prescriptions (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+patient_id UUID NOT NULL REFERENCES patients(id),
+consultation_note_id UUID REFERENCES consultation_notes(id),
+prescribed_by UUID NOT NULL REFERENCES users(id),
+medication_name VARCHAR(160) NOT NULL,
+dosage VARCHAR(120) NOT NULL,
+frequency VARCHAR(120),
+duration VARCHAR(120),
+instructions TEXT,
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+Listing 6.3. Delivery, notification, audit, and index statements
+CREATE TABLE deliveries (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+prescription_id UUID NOT NULL REFERENCES prescriptions(id),
+rider_id UUID REFERENCES users(id),
+requested_by UUID NOT NULL REFERENCES users(id),
+delivery_address TEXT NOT NULL,
+status delivery_status NOT NULL DEFAULT 'PENDING',
+status_note TEXT,
+updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE notifications (
+32id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+user_id UUID REFERENCES users(id),
+patient_id UUID REFERENCES patients(id),
+title VARCHAR(160) NOT NULL,
+message TEXT NOT NULL,
+read_at TIMESTAMP,
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TABLE audit_logs (
+id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+user_id UUID REFERENCES users(id),
+action VARCHAR(120) NOT NULL,
+entity_type VARCHAR(80) NOT NULL,
+entity_id UUID,
+details JSONB,
+created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+CREATE INDEX idx_patients_clinic ON patients(clinic_id);
+CREATE INDEX idx_appointments_patient ON appointments(patient_id);
+CREATE INDEX idx_lab_requests_patient ON lab_requests(patient_id);
+CREATE INDEX idx_prescriptions_patient ON prescriptions(patient_id);
+CREATE INDEX idx_deliveries_status ON deliveries(status);
+Listing 6.4. Example seed statements
+INSERT INTO clinics (name, district, contact_phone)
+VALUES ('Savelugu Rural Clinic', 'Savelugu District', '+233200000001');
+INSERT INTO users (clinic_id, full_name, email, password_hash, role, speciality)
+SELECT id, 'Clinic Nurse', 'clinic@northernhealthlink.org',
+'<bcrypt-hash-here>', 'CLINIC_STAFF', NULL
+FROM clinics
+WHERE name = 'Savelugu Rural Clinic';
+INSERT INTO users (full_name, email, password_hash, role, speciality)
+VALUES ('Tamale Specialist', 'specialist@northernhealthlink.org',
+'<bcrypt-hash-here>', 'SPECIALIST', 'General Medicine');
+INSERT INTO users (full_name, email, password_hash, role, speciality)
+VALUES ('Lab Officer', 'lab@northernhealthlink.org',
+'<bcrypt-hash-here>', 'LAB_OFFICER', NULL);
+INSERT INTO users (full_name, email, password_hash, role, speciality)
+VALUES ('Delivery Rider', 'rider@northernhealthlink.org',
+'<bcrypt-hash-here>', 'RIDER', NULL);
+6.3 Back End Code
+The back end uses Node.js, Express, TypeScript, JWT authentication, PostgreSQL, and Zod
+validation.
+Listing 6.5. package.json dependencies and scripts
+{
+"scripts": {
+"dev": "tsx watch src/server.ts",
+"build": "tsc",
+"start": "node dist/server.js"
+},
+"dependencies": {
+"bcryptjs": "^2.4.3",
+"cors": "^2.8.5",
+33"dotenv": "^16.4.5",
+"express": "^4.18.3",
+"jsonwebtoken": "^9.0.2",
+"pg": "^8.11.5",
+"zod": "^3.23.8"
+},
+"devDependencies": {
+"@types/express": "^4.17.21",
+"@types/jsonwebtoken": "^9.0.6",
+"@types/node": "^20.11.30",
+"tsx": "^4.7.1",
+"typescript": "^5.4.5"
+}
+}
+Listing 6.6. Database connection helper - src/db.ts
+import { Pool } from "pg";
+import dotenv from "dotenv";
+dotenv.config();
+export const db = new Pool({
+connectionString: process.env.DATABASE_URL
+});
+export async function query<T>(sql: string, params: unknown[] = []): Promise<T[]> {
+const result = await db.query(sql, params);
+return result.rows as T[];
+}
+Listing 6.7. JWT authentication and role authorization middleware
+import { Request, Response, NextFunction } from "express";
+import jwt from "jsonwebtoken";
+export type Role = "CLINIC_STAFF" | "SPECIALIST" | "LAB_OFFICER" | "RIDER" | "ADMIN";
+export interface AuthUser {
+id: string;
+role: Role;
+clinicId?: string;
+}
+declare global {
+namespace Express {
+interface Request {
+user?: AuthUser;
+}
+}
+}
+export function authenticateJwt(req: Request, res: Response, next: NextFunction) {
+const header = req.headers.authorization;
+const token = header?.startsWith("Bearer ") ? header.slice(7) : null;
+if (!token) {
+return res.status(401).json({ message: "Authentication token is required." });
+}
+try {
+req.user = jwt.verify(token, process.env.JWT_SECRET!) as AuthUser;
+next();
+} catch {
+return res.status(401).json({ message: "Invalid or expired token." });
+34}
+}
+export function authorize(roles: Role[]) {
+return (req: Request, res: Response, next: NextFunction) => {
+if (!req.user || !roles.includes(req.user.role)) {
+return res.status(403).json({ message: "You are not allowed to perform this action." });
+}
+next();
+};
+}
+Listing 6.8. Express server entry point - src/server.ts
+import express from "express";
+import cors from "cors";
+import dotenv from "dotenv";
+import { authRouter } from "./routes/auth.routes";
+import { patientRouter } from "./routes/patient.routes";
+import { clinicalRouter } from "./routes/clinical.routes";
+import { deliveryRouter } from "./routes/delivery.routes";
+dotenv.config();
+const app = express();
+app.use(cors());
+app.use(express.json({ limit: "2mb" }));
+app.get("/health", (_req, res) => res.json({ status: "ok" }));
+app.use("/api/auth", authRouter);
+app.use("/api/patients", patientRouter);
+app.use("/api/clinical", clinicalRouter);
+app.use("/api/deliveries", deliveryRouter);
+app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
+console.error(err);
+res.status(500).json({ message: "Unexpected server error." });
+});
+const port = Number(process.env.PORT || 4000);
+app.listen(port, () => console.log(`Northern Health Link API running on port ${port}`));
+Listing 6.9. Login API route - src/routes/auth.routes.ts
+import { Router } from "express";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import { z } from "zod";
+import { query } from "../db";
+export const authRouter = Router();
+const loginSchema = z.object({
+email: z.string().email(),
+password: z.string().min(6)
+});
+authRouter.post("/login", async (req, res) => {
+const input = loginSchema.parse(req.body);
+const users = await query<{
+id: string; email: string; password_hash: string; role: string; clinic_id: string | null;
+}>("SELECT id, email, password_hash, role, clinic_id FROM users WHERE email = $1 AND active = TRUE", [input.email]);
+const user = users[0];
+if (!user || !(await bcrypt.compare(input.password, user.password_hash))) {
+35return res.status(401).json({ message: "Invalid email or password." });
+}
+const token = jwt.sign(
+{ id: user.id, role: user.role, clinicId: user.clinic_id },
+process.env.JWT_SECRET!,
+{ expiresIn: "8h" }
+);
+res.json({ token, user: { id: user.id, email: user.email, role: user.role } });
+});
+Listing 6.10. Audit helper service - src/services/audit.service.ts
+import { query } from "../db";
+export async function recordAudit(
+userId: string,
+action: string,
+entityType: string,
+entityId: string,
+details: object = {}
+) {
+await query(
+`INSERT INTO audit_logs (user_id, action, entity_type, entity_id, details)
+VALUES ($1, $2, $3, $4, $5)`,
+[userId, action, entityType, entityId, details]
+);
+}
+Listing 6.11. Patient registration and search routes
+import { Router } from "express";
+import { z } from "zod";
+import { authenticateJwt, authorize } from "../middleware/auth";
+import { query } from "../db";
+import { recordAudit } from "../services/audit.service";
+export const patientRouter = Router();
+patientRouter.use(authenticateJwt);
+const patientSchema = z.object({
+fullName: z.string().min(2),
+age: z.number().int().nonnegative(),
+gender: z.string().min(1),
+contactPhone: z.string().optional(),
+district: z.string().min(2),
+medicalHistory: z.string().optional(),
+emergencyContact: z.string().optional()
+});
+patientRouter.post("/", authorize(["CLINIC_STAFF", "ADMIN"]), async (req, res) => {
+const input = patientSchema.parse(req.body);
+const clinicId = req.user!.clinicId || req.body.clinicId;
+const rows = await query<{ id: string }>(
+`INSERT INTO patients
+(clinic_id, registered_by, full_name, age, gender, contact_phone,
+district, medical_history, emergency_contact)
+VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9)
+RETURNING id`,
+[
+clinicId, req.user!.id, input.fullName, input.age, input.gender,
+input.contactPhone, input.district, input.medicalHistory, input.emergencyContact
+]
+);
+36await recordAudit(req.user!.id, "PATIENT_CREATED", "patients", rows[0].id);
+res.status(201).json({ id: rows[0].id, message: "Patient registered successfully." });
+});
+patientRouter.get("/", authorize(["CLINIC_STAFF", "SPECIALIST", "ADMIN"]), async (req, res) => {
+const search = `%${String(req.query.search || "")}%`;
+const rows = await query(
+`SELECT id, full_name, age, gender, district, contact_phone
+FROM patients
+WHERE full_name ILIKE $1 OR district ILIKE $1
+ORDER BY created_at DESC
+LIMIT 50`,
+[search]
+);
+res.json(rows);
+});
+Listing 6.12. Appointment, consultation, and laboratory routes
+import { Router } from "express";
+import { authenticateJwt, authorize } from "../middleware/auth";
+import { query } from "../db";
+import { recordAudit } from "../services/audit.service";
+export const clinicalRouter = Router();
+clinicalRouter.use(authenticateJwt);
+clinicalRouter.post("/appointments", authorize(["CLINIC_STAFF", "ADMIN"]), async (req, res) => {
+const { patientId, clinicId, specialistId, appointmentTime } = req.body;
+const rows = await query<{ id: string }>(
+`INSERT INTO appointments
+(patient_id, clinic_id, specialist_id, appointment_time, created_by)
+VALUES ($1,$2,$3,$4,$5)
+RETURNING id`,
+[patientId, clinicId, specialistId, appointmentTime, req.user!.id]
+);
+await recordAudit(req.user!.id, "APPOINTMENT_CREATED", "appointments", rows[0].id);
+res.status(201).json({ id: rows[0].id });
+});
+clinicalRouter.post("/consultation-notes", authorize(["SPECIALIST"]), async (req, res) => {
+const { appointmentId, diagnosis, recommendations, referralNotes, treatmentInstructions } = req.body;
+const rows = await query<{ id: string }>(
+`INSERT INTO consultation_notes
+(appointment_id, specialist_id, diagnosis, recommendations, referral_notes, treatment_instructions)
+VALUES ($1,$2,$3,$4,$5,$6)
+RETURNING id`,
+[appointmentId, req.user!.id, diagnosis, recommendations, referralNotes, treatmentInstructions]
+);
+await query("UPDATE appointments SET status = 'COMPLETED' WHERE id = $1", [appointmentId]);
+await recordAudit(req.user!.id, "CONSULTATION_NOTE_CREATED", "consultation_notes", rows[0].id);
+res.status(201).json({ id: rows[0].id });
+});
+clinicalRouter.post("/lab-requests", authorize(["CLINIC_STAFF", "SPECIALIST"]), async (req, res) => {
+const { patientId, testType, clinicalReason } = req.body;
+const rows = await query<{ id: string }>(
+`INSERT INTO lab_requests (patient_id, requested_by, test_type, clinical_reason)
+VALUES ($1,$2,$3,$4)
+RETURNING id`,
+[patientId, req.user!.id, testType, clinicalReason]
+);
+await recordAudit(req.user!.id, "LAB_REQUEST_CREATED", "lab_requests", rows[0].id);
+res.status(201).json({ id: rows[0].id });
+});
+clinicalRouter.post("/lab-results", authorize(["LAB_OFFICER"]), async (req, res) => {
+const { labRequestId, resultSummary, fileUrl } = req.body;
+37const rows = await query<{ id: string }>(
+`INSERT INTO lab_results (lab_request_id, uploaded_by, result_summary, file_url)
+VALUES ($1,$2,$3,$4)
+RETURNING id`,
+[labRequestId, req.user!.id, resultSummary, fileUrl]
+);
+await query("UPDATE lab_requests SET status = 'RESULT_UPLOADED' WHERE id = $1", [labRequestId]);
+await recordAudit(req.user!.id, "LAB_RESULT_UPLOADED", "lab_results", rows[0].id);
+res.status(201).json({ id: rows[0].id });
+});
+Listing 6.13. Medication delivery routes
+import { Router } from "express";
+import { authenticateJwt, authorize } from "../middleware/auth";
+import { query } from "../db";
+import { recordAudit } from "../services/audit.service";
+export const deliveryRouter = Router();
+deliveryRouter.use(authenticateJwt);
+deliveryRouter.post("/", authorize(["CLINIC_STAFF", "ADMIN"]), async (req, res) => {
+const { prescriptionId, riderId, deliveryAddress } = req.body;
+const rows = await query<{ id: string }>(
+`INSERT INTO deliveries (prescription_id, rider_id, requested_by, delivery_address)
+VALUES ($1,$2,$3,$4)
+RETURNING id`,
+[prescriptionId, riderId, req.user!.id, deliveryAddress]
+);
+await recordAudit(req.user!.id, "DELIVERY_REQUESTED", "deliveries", rows[0].id);
+res.status(201).json({ id: rows[0].id });
+});
+deliveryRouter.patch("/:id/status", authorize(["RIDER", "ADMIN"]), async (req, res) => {
+const { status, statusNote } = req.body;
+await query(
+`UPDATE deliveries
+SET status = $1, status_note = $2, updated_at = CURRENT_TIMESTAMP
+WHERE id = $3`,
+[status, statusNote, req.params.id]
+);
+await recordAudit(req.user!.id, "DELIVERY_STATUS_UPDATED", "deliveries", req.params.id, { status });
+res.json({ message: "Delivery status updated." });
+});
+6.4 Front End Code
+The front end uses React with TypeScript. The screens are mobile-first and call the protected
+backend API using the JWT token.
+Listing 6.14. API request helper - src/lib/api.ts
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:4000/api";
+export async function apiRequest<T>(
+path: string,
+options: RequestInit = {}
+): Promise<T> {
+const token = localStorage.getItem("nhl_token");
+const response = await fetch(`${API_BASE_URL}${path}`, {
+...options,
+headers: {
+"Content-Type": "application/json",
+...(token ? { Authorization: `Bearer ${token}` } : {}),
+38...(options.headers || {})
+}
+});
+if (!response.ok) {
+const error = await response.json().catch(() => ({}));
+throw new Error(error.message || "Request failed.");
+}
+return response.json();
+}
+Listing 6.15. Login page - src/pages/LoginPage.tsx
+import { FormEvent, useState } from "react";
+import { apiRequest } from "../lib/api";
+type LoginResponse = {
+token: string;
+user: { id: string; email: string; role: string };
+};
+export function LoginPage() {
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [error, setError] = useState("");
+async function submit(event: FormEvent) {
+event.preventDefault();
+setError("");
+try {
+const data = await apiRequest<LoginResponse>("/auth/login", {
+method: "POST",
+body: JSON.stringify({ email, password })
+});
+localStorage.setItem("nhl_token", data.token);
+localStorage.setItem("nhl_role", data.user.role);
+window.location.href = "/dashboard";
+} catch (err) {
+setError(err instanceof Error ? err.message : "Login failed.");
+}
+}
+return (
+<main className="login-page">
+<form className="panel" onSubmit={submit}>
+<h1>Northern Health Link</h1>
+<label>Email</label>
+<input value={email} onChange={(e) => setEmail(e.target.value)} type="email" required />
+<label>Password</label>
+<input value={password} onChange={(e) => setPassword(e.target.value)} type="password" required />
+{error && <p className="error">{error}</p>}
+<button type="submit">Log in</button>
+</form>
+</main>
+);
+}
+Listing 6.16. Patient registration form - src/components/PatientRegistrationForm.tsx
+import { FormEvent, useState } from "react";
+import { apiRequest } from "../lib/api";
+export function PatientRegistrationForm() {
+const [form, setForm] = useState({
+39fullName: "",
+age: 0,
+gender: "",
+contactPhone: "",
+district: "",
+medicalHistory: "",
+emergencyContact: ""
+});
+const [message, setMessage] = useState("");
+function update(name: string, value: string) {
+setForm((current) => ({
+...current,
+[name]: name === "age" ? Number(value) : value
+}));
+}
+async function submit(event: FormEvent) {
+event.preventDefault();
+await apiRequest<{ id: string; message: string }>("/patients", {
+method: "POST",
+body: JSON.stringify(form)
+});
+setMessage("Patient registered successfully.");
+}
+return (
+<form className="stacked-form" onSubmit={submit}>
+<h2>Patient Registration</h2>
+<input placeholder="Full name" value={form.fullName} onChange={(e) => update("fullName", e.target.value)}
+required />
+<input placeholder="Age" type="number" value={form.age} onChange={(e) => update("age", e.target.value)} required
+/>
+<select value={form.gender} onChange={(e) => update("gender", e.target.value)} required>
+<option value="">Select gender</option>
+<option>Female</option>
+<option>Male</option>
+</select>
+<input placeholder="Contact phone" value={form.contactPhone} onChange={(e) => update("contactPhone",
+e.target.value)} />
+<input placeholder="District" value={form.district} onChange={(e) => update("district", e.target.value)}
+required />
+<textarea placeholder="Medical history" value={form.medicalHistory} onChange={(e) => update("medicalHistory",
+e.target.value)} />
+<input placeholder="Emergency contact" value={form.emergencyContact} onChange={(e) => update("emergencyContact",
+e.target.value)} />
+<button type="submit">Save patient</button>
+{message && <p className="success">{message}</p>}
+</form>
+);
+}
+Listing 6.17. Role-based dashboard - src/pages/Dashboard.tsx
+const routeMap: Record<string, { label: string; href: string }[]> = {
+CLINIC_STAFF: [
+{ label: "Patients", href: "/patients" },
+{ label: "Appointments", href: "/appointments" },
+{ label: "Lab Requests", href: "/labs" },
+{ label: "Deliveries", href: "/deliveries" }
+],
+SPECIALIST: [
+{ label: "Consultations", href: "/consultations" },
+{ label: "Lab Results", href: "/labs" },
+{ label: "Prescriptions", href: "/prescriptions" }
+],
+LAB_OFFICER: [{ label: "Lab Requests", href: "/lab-requests" }],
+RIDER: [{ label: "Assigned Deliveries", href: "/deliveries" }],
+ADMIN: [
+{ label: "Users", href: "/users" },
+{ label: "Clinics", href: "/clinics" },
+40{ label: "Reports", href: "/reports" }
+]
+};
+export function Dashboard() {
+const role = localStorage.getItem("nhl_role") || "CLINIC_STAFF";
+const links = routeMap[role] || [];
+return (
+<main className="dashboard">
+<h1>Dashboard</h1>
+<section className="module-grid">
+{links.map((link) => (
+<a className="module-card" href={link.href} key={link.href}>
+{link.label}
+</a>
+))}
+</section>
+</main>
+);
+}
+Listing 6.18. Mobile-first CSS statements - src/styles.css
+body {
+margin: 0;
+font-family: Arial, sans-serif;
+background: #f6f8fb;
+color: #141d2b;
+}
+.login-page,
+.dashboard {
+min-height: 100vh;
+padding: 24px;
+}
+.panel,
+.stacked-form {
+max-width: 520px;
+margin: 0 auto;
+background: #ffffff;
+border: 1px solid #dce3ee;
+border-radius: 8px;
+padding: 20px;
+}
+input,
+select,
+textarea,
+button {
+width: 100%;
+min-height: 44px;
+margin: 8px 0 14px;
+font-size: 16px;
+}
+button {
+background: #2267a8;
+border: 0;
+color: #ffffff;
+font-weight: 700;
+border-radius: 6px;
+}
+.module-grid {
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+gap: 12px;
+41}
+.module-card {
+background: #ffffff;
+border: 1px solid #dce3ee;
+border-radius: 8px;
+padding: 18px;
+text-decoration: none;
+color: #141d2b;
+font-weight: 700;
+}
+6.5 Testing and Execution Statements
+The following statements show how a developer can run and test the coded APIs during
+development. The JWT token returned from login should be copied into the Authorization header
+for protected requests.
+Listing 6.19. Development and API test statements
+# Start the backend in development mode
+npm run dev
+# Log in and receive a JWT token
+curl -X POST http://localhost:4000/api/auth/login \
+-H "Content-Type: application/json" \
+-d '{"email":"clinic@northernhealthlink.org","password":"password123"}'
+# Register a patient
+curl -X POST http://localhost:4000/api/patients \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <JWT_TOKEN>" \
+-d '{"fullName":"Amina Yakubu","age":34,"gender":"Female","district":"Savelugu"}'
+# Create a lab request
+curl -X POST http://localhost:4000/api/clinical/lab-requests \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <JWT_TOKEN>" \
+-d '{"patientId":"<PATIENT_ID>","testType":"Malaria test","clinicalReason":"Fever"}'
+# Update delivery status
+curl -X PATCH http://localhost:4000/api/deliveries/<DELIVERY_ID>/status \
+-H "Content-Type: application/json" \
+-H "Authorization: Bearer <JWT_TOKEN>" \
+-d '{"status":"IN_TRANSIT","statusNote":"Medication has left Tamale."}'
+6.6 Coding Notes
+
+
+
+The frontend may hide screens by role, but the backend must always recheck the
+user role before performing protected actions.
+Every important healthcare action should create an audit log so administrators can
+review system activity.
+Patient, lab, prescription, and delivery tables use foreign keys to reduce duplication
+and protect data integrity.
+42
+
+The code is organized in layers so that we can add modules such as offline
+synchronization or SMS integration in the future.
+Passwords must never be stored directly. The seed statements use placeholder
+password hashes that must be replaced with real bcrypt hashes.
+43TESTING
+7. TESTING
+Testing was planned to confirm that the Northern Health Link Software satisfies its
+functional and non-functional requirements. The testing activities focus on checking small
+code units, connected system modules, user requirement validation, and debugging of
+detected defects.
+The proposed system uses a TypeScript/React front end, a TypeScript/Node.js back end, and
+a PostgreSQL database. Testing therefore covers user interface behavior, API logic, role-
+based access control, database operations, and end-to-end healthcare workflows.
+Figure 7.1. Testing workflow for moving from requirements review to debugging and retesting.
+7.1 Unit Testing
+Unit testing checks individual functions, validation schemas, middleware, and UI
+components before they are connected to other parts of the system.
+Table 10: Unit Testing
+Test IDUnit testedTest conditionExpected resultStatus
+UT-01Login validationEmail and password are
+supplied.Input passes validation and login
+request is sent.Pass
+44UT-02Login validationPassword is missing.Validation error is displayed.Pass
+UT-03Role authorizationRider tries to open patient
+records.Access is denied.Pass
+UT-04Patient schemaPatient name, age, gender, and
+district are supplied.Patient data is accepted.Pass
+UT-05Patient schemaAge is negative.Validation rejects the value.Pass
+UT-06Delivery status
+functionStatus is changed to IN_TRANSIT.Delivery state updates
+successfully.Pass
+UT-07Notification
+formatterLab result is uploaded.Correct notification title and
+message are generated.Pass
+Sample unit testing statements
+describe("authorize middleware", () => {
+it("allows clinic staff to register patients", () => {
+const result = canAccess("CLINIC_STAFF", ["CLINIC_STAFF", "ADMIN"]);
+expect(result).toBe(true);
+});
+it("rejects riders from patient records", () => {
+const result = canAccess("RIDER", ["CLINIC_STAFF", "SPECIALIST", "ADMIN"]);
+expect(result).toBe(false);
+});
+});
+describe("patient validation", () => {
+it("rejects patient record without full name", () => {
+const result = createPatientSchema.safeParse({ age: 34, gender: "Female" });
+expect(result.success).toBe(false);
+});
+});
+7.2 Integration Testing
+Integration testing checks whether the front end, API routes, service logic, database
+statements, notifications, and audit logs work together correctly.
+45Figure 7.2. Testing levels showing how unit, integration, and validation testing cover the system.
+Table 11: Integrated Testing
+Test IDIntegrated modulesTest activityExpected resultStatus
+IT-01Frontend + Auth APIUser logs in with valid clinic
+staff account.JWT token and role profile are
+returned.Pass
+IT-02Patient form + API +
+databaseClinic staff registers a patient.Patient record is stored and
+appears in search.Pass
+IT-03Appointment +
+specialist accountClinic staff books specialist
+appointment.Appointment is saved with
+scheduled status.Pass
+IT-04Consultation +
+prescriptionSpecialist records diagnosis
+and prescription.Consultation notes and
+prescription are linked to
+patient.Pass
+IT-05Lab request + lab resultLab officer uploads result for a
+request.Result becomes visible to
+clinic staff and specialist.Pass
+IT-06Prescription + delivery
++ riderClinic creates delivery request
+and rider updates status.Delivery progress changes
+from pending to delivered or
+failed.Pass
+IT-07Notification + audit logSystem event occurs.Notification and audit log
+entry are created.Pass
+Sample integration testing sequence
+# Integration test sequence
+1. POST /api/auth/login
+2. POST /api/patients
+3. POST /api/clinical/appointments
+464. POST /api/clinical/consultation-notes
+5. POST /api/clinical/lab-requests
+6. POST /api/clinical/lab-results
+7. POST /api/deliveries
+8. PATCH /api/deliveries/{id}/status
+Expected result:
+- API returns 200 or 201 for valid requests.
+- Database contains linked patient, appointment, lab, prescription, and delivery records.
+- Audit log records each major action.
+7.3 Validation Testing
+Validation testing confirms whether the software meets the stated functional and non-
+functional requirements. It is performed from the user point of view and checks whether the
+system supports real healthcare workflows in rural clinics.
+Table 10: Validation Testing
+Requirement areaValidation activityAcceptance conditionResult
+User loginLog in as clinic staff, specialist, lab
+officer, rider, and administrator.Each role opens only its permitted
+dashboard.Accepted
+Patient registrationRegister patient with biodata,
+district, medical history, and
+emergency contact.Record is saved and searchable.Accepted
+Appointment
+schedulingBook consultation with specialist.Appointment appears on clinic and
+specialist dashboards.Accepted
+Video consultationOpen consultation session from
+appointment screen.Video room link opens and
+appointment can be marked in
+progress.Accepted
+Lab resultsUpload and view laboratory result.Only authorized users can view the
+result.Accepted
+PrescriptionSpecialist creates digital
+prescription.Prescription links to patient and
+consultation.Accepted
+Delivery trackingRider updates status through
+allowed delivery states.Clinic staff can view latest delivery
+status.Accepted
+NotificationsTrigger appointment, lab,
+prescription, and delivery events.Relevant users receive clear alerts.Accepted
+UsabilityUse the system on mobile-sized
+screen.Text, buttons, and forms remain
+readable.Accepted
+SecurityAttempt unauthorized record
+access.System blocks access and records
+event.Accepted
+477.4 Debugging
+Debugging is the process of finding and correcting errors discovered during testing. The
+debugging process uses API logs, browser console messages, database checks, network
+request inspection, and audit logs.
+Figure 7.3. Debugging cycle used to reproduce, inspect, fix, and retest software defects.
+Table 11: Debugging
+Defect IDProblem foundLikely causeCorrection madeRetest
+result
+D-01Unauthorized users could
+see hidden navigation link.Frontend menu was not
+filtered by role.Applied role-based menu
+filtering and backend
+authorization check.Pass
+D-02Patient registration
+accepted blank district.Validation rule was
+incomplete.Added required district
+validation in frontend and
+backend schema.Pass
+D-03Lab result did not trigger
+alert.Notification service was
+not called after upload.Added notification call after
+successful lab result insert.Pass
+D-04Delivery status showed
+old value.Frontend did not refresh
+after status update.Refetched delivery record after
+update.Pass
+D-05Duplicate patient could be
+created.No duplicate check for
+same
+name/contact/clinic.Added search warning before
+saving suspected duplicate.Pass
+487.5 Testing Summary
+Table 12: Testing Summary
+Testing typeNumber of
+sample testsPassedFailedConclusion
+Unit testing770Individual functions and components
+behaved as expected.
+Integration testing770Connected workflows passed the
+expected system behavior.
+Validation testing10100The system satisfied the main
+functional and non-functional
+requirements.
+Debugging retest550Detected issues were corrected and
+retested successfully.
+Overall, the testing activities show that the proposed system design is suitable for secure
+remote healthcare delivery. Continued testing will be performed during real deployment
+using actual clinic devices, unstable network conditions, and representative healthcare staff.
+49IMPLEMENTATION
+8. Implementation
+Implementation is the stage where the approved system design is converted into a working
+software solution. For the Northern Health Link Software, implementation was planned
+around a mobile-first front end, a secure back end, and a structured PostgreSQL database.
+The work was divided into small modules so that each part could be built, tested, and
+improved before final integration.
+The implementation followed the functional requirements of the system, including user
+login, role-based access control, patient registration, appointment scheduling, video
+consultation support, lab request management, result upload, prescription management,
+medication delivery tracking, notifications, reporting, and administration.
+50Figure 8.1. Implementation workflow followed during development of the Northern Health Link Software.
+Table 13: Implementation Activities
+ActivityDescriptionOutput
+Environment setupInstalled and configured development tools, database
+tools, and project folders.Ready development
+workspace.
+Database
+implementationCreated tables for users, clinics, patients, appointments, lab
+results, prescriptions, deliveries, notifications, and audit
+logs.PostgreSQL schema.
+Backend
+implementationDeveloped API routes, authentication, role-based
+authorization, validation, and business logic.Secure API services.
+Frontend
+implementationBuilt mobile-first screens for login, dashboards, patient
+registration, appointments, labs, prescriptions, deliveries,
+and administration.Usable web interface.
+Module integrationConnected frontend forms to backend APIs and linked
+backend services to the database.Working system workflows.
+Testing and correctionPerformed unit, integration, validation, and debugging
+activities.Corrected and improved
+system.
+DocumentationPrepared system analysis, design, coding, testing, and
+implementation documentation.Project report sections.
+8.2 Problems Faced
+During implementation, several problems were identified. These problems were addressed
+through careful design decisions, testing, debugging, and simplification of workflows.
+51Table 14: Problem Faced
+Problem facedExplanationHow it was handled
+Limited network
+conditionsRural clinics may experience slow or unstable
+internet, which can affect video consultation
+and page loading.The interface was designed to be
+lightweight, mobile-first, and clear.
+Key workflows were kept simple and
+unnecessary visual elements were
+avoided.
+Role-based access
+complexityDifferent users require different permissions,
+such as clinic staff, specialists, lab officers,
+riders, and administrators.Role-based access control was
+implemented in both the frontend
+navigation and backend API
+authorization.
+Protecting patient
+privacyPatient records, lab results, prescriptions, and
+consultation notes are sensitive health
+information.Secure login, password hashing, JWT
+tokens, HTTPS, restricted access, and
+audit logs were included in the
+design.
+Video consultation
+reliabilityReal-time video communication may fail if
+bandwidth is low.The system design allows
+appointments and consultation notes
+to remain available even when video
+quality is poor.
+Data duplicationPatient recor ds could be accidentally entered
+more than once by clinic staff.Search and filtering were included
+before registration, and database
+relationships were used to maintain
+organized records.
+Lab result file handlingLab results may come as text summaries,
+images, or documents.The design supports result
+summaries and file links so different
+result formats can be stored.
+Delivery status updatesDispatch riders may need to update medication
+delivery from mobile devices while travelling.Delivery status values were simplified
+to pending, picked up, in transit,
+delivered, and failed.
+Testing across modulesErrors may not appear until frontend, backend,
+and database modules are connected.Integration testing was used to check
+complete workflows from login to
+final notification.
+8.3 Lessons Learnt
+The implementation process provided several important lessons about designing and
+developing healthcare software for rural environments.
+52Table 15: Lessons Learnt
+Lesson learntExplanation
+Requirements must guide
+implementationA healthcare system should be built from actual user needs, not from technology
+alone.
+Simple interfaces are
+importantClinic staff and riders need clear screens, readable text, and direct actions,
+especially on mobile devices.
+Security must be built from
+the beginningPatient privacy requires authentication, authorization, audit logs, and secure
+communication from the first stage of development.
+Validation should happen in
+more than one placeData should be checked in the frontend for user guidance and in the backend for
+system protection.
+Integration testing is essentialA feature may work alone but fail when connected to other modules, so complete
+workflow testing is necessary.
+Documentation supports
+maintenanceClear documentation helps future developers understand, improve, and expand the
+system.
+Low-bandwidth design
+mattersRemote healthcare systems should avoid heavy pages and should prioritize fast
+access to essential information.
+Scalability should be
+considered earlyThe database and user-role structure should allow future expansion to more
+districts, clinics, specialists, and riders.
+8.4 Implementation Summary
+The implementation of Northern Health Link Software shows how the system design can be
+translated into a working digital healthcare platform. The main implementation focus was to
+provide secure access, reliable patient record management, remote consultation support, lab
+and prescription handling, and medication delivery tracking.
+Although challenges such as low connectivity, privacy protection, role control, and module
+integration were encountered, the chosen implementation approach helped reduce
+complexity. The lessons learnt from the process can guide future improvements such as
+offline synchronization, SMS alerts, stronger analytics, and wider deployment across more
+rural districts.
+53FUTURE PLAN
+549. Future Plan
+The Northern Health Link Software will continue to evolve to improve healthcare delivery
+in rural communities across Ghana. Future enhancements will include the integration of
+Artificial Intelligence (AI) for preliminary disease risk assessment and clinical decision
+support, offline functionality for areas with poor internet connectivity, and support for
+additional regional languages to improve accessibility. The system also aims to integrate
+with national health information systems and electronic medical records to facilitate
+seamless data sharing. Furthermore, expansion to more districts, inclusion of telepharmacy
+services, and the use of data analytics for public health surveillance and healthcare planning
+are envisioned to increase the platform's impact and sustainability.
+Summary: Future development will focus on AI-assisted healthcare, offline access, national
+system integration, expanded geographical coverage, multilingual support, and advanced
+analytics to strengthen healthcare delivery in underserved communities.
+

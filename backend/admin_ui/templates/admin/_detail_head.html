@@ -1,0 +1,6 @@
+{# Shared drawer header. Set d_title, optionally d_sub + d_pill, then include. #}
+<div class="dhead">
+  <div><h3>{{ d_title }}</h3>{% if d_sub %}<p class="sub">{{ d_sub }}</p>{% endif %}</div>
+  <button class="btn ghost sm" onclick="closeDetail()" aria-label="Close details panel">✕ Close</button>
+</div>
+{% if d_pill %}<div class="dpill">{{ d_pill|safe }}</div>{% endif %}

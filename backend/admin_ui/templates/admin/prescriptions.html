@@ -1,0 +1,11 @@
+{% extends "admin/shell.html" %}
+{% import "admin/_icons.html" as I %}
+{% block heading %}Prescriptions{% endblock %}
+{% block sub %}Digital medication orders from specialists — click a row for details{% endblock %}
+{% block content %}
+<div class="card"><div class="pad"><div class="filters" style="grid-template-columns:1.4fr 1fr">
+<div><label class="f">Search</label><div class="field">{{ I.icon('search') }}<input id="rxq" name="q" class="input" placeholder="Medication, patient…" hx-get="/admin/partials/prescriptions" hx-trigger="keyup changed delay:400ms" hx-target="#rxtable" hx-include="#rxdst"></div></div>
+<div><label class="f">Delivery</label><div class="field">{{ I.icon('truck') }}<select id="rxdst" name="dst" class="select" hx-get="/admin/partials/prescriptions" hx-trigger="change" hx-target="#rxtable" hx-include="#rxq"><option value="">All</option><option value="has">Has delivery</option><option value="none">No delivery</option><option value="failed">Delivery failed</option></select></div></div>
+</div></div></div>
+<div id="rxtable" hx-get="/admin/partials/prescriptions" hx-trigger="load" hx-swap="innerHTML" style="margin-top:14px"><p><span class="spinner"></span> Loading…</p></div>
+{% endblock %}

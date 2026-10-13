@@ -1,0 +1,11 @@
+{% extends "admin/shell.html" %}
+{% import "admin/_icons.html" as I %}
+{% block heading %}Consultations{% endblock %}
+{% block sub %}Specialist notes: diagnosis, recommendations, referrals, treatment — click a row for the appointment{% endblock %}
+{% block content %}
+<div class="card"><div class="pad"><div class="filters" style="grid-template-columns:1fr 1fr">
+<div><label class="f">Specialist</label><div class="field">{{ I.icon('user') }}<select id="cspec" name="specialist_id" class="select" hx-get="/admin/partials/consultations" hx-trigger="change" hx-target="#ctable" hx-include="#cq"><option value="">All specialists</option>{% for s in specialists %}<option value="{{ s.id }}">{{ s.full_name }} ({{ s.user_id }})</option>{% endfor %}</select></div></div>
+<div><label class="f">Search</label><div class="field">{{ I.icon('search') }}<input id="cq" name="q" class="input" placeholder="Diagnosis, patient, specialist…" hx-get="/admin/partials/consultations" hx-trigger="keyup changed delay:400ms" hx-target="#ctable" hx-include="#cspec"></div></div>
+</div></div></div>
+<div id="ctable" hx-get="/admin/partials/consultations" hx-trigger="load" hx-swap="innerHTML" style="margin-top:14px"><p><span class="spinner"></span> Loading…</p></div>
+{% endblock %}

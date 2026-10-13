@@ -1,0 +1,14 @@
+<p class="muted">{{ total }} events — page {{ page }} / {{ total_pages }}</p>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>When</th><th>User</th><th>Action</th><th>Entity</th><th class="hide-sm">Details</th></tr>
+{% for l in logs %}
+<tr><td style="white-space:nowrap">{{ l.created_at.strftime('%Y-%m-%d %H:%M') if l.created_at else '—' }}</td>
+<td>{{ users.get(l.user_id, l.user_id or '—') }}</td><td><b>{{ l.action }}</b></td><td>{{ l.entity_type }}{% if l.entity_id %} #{{ l.entity_id }}{% endif %}</td>
+<td class="hide-sm">{% if details.get(l.id) %}<button class="btn ghost sm" onclick="openDetail('/admin/partials/audit-logs/{{ l.id }}')">View</button>{% else %}<span class="muted">—</span>{% endif %}</td></tr>
+{% else %}<tr><td colspan="5"><div class="empty">No events found.</div></td></tr>{% endfor %}
+</table></div>
+{% if total_pages > 1 %}<div class="pager">
+{% if page > 1 %}<button class="btn ghost sm" hx-get="/admin/partials/audit-logs?page={{ page-1 }}&per_page={{ per_page }}{% if entity_type %}&entity_type={{ entity_type }}{% endif %}{% if user_id %}&user_id={{ user_id }}{% endif %}" hx-target="#audit-table">← Prev</button>{% endif %}
+<span>Page {{ page }} / {{ total_pages }}</span>
+{% if page < total_pages %}<button class="btn ghost sm" hx-get="/admin/partials/audit-logs?page={{ page+1 }}&per_page={{ per_page }}{% if entity_type %}&entity_type={{ entity_type }}{% endif %}{% if user_id %}&user_id={{ user_id }}{% endif %}" hx-target="#audit-table">Next →</button>{% endif %}
+</div>{% endif %}

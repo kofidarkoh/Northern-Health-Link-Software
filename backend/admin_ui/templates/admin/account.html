@@ -1,0 +1,93 @@
+{% extends "admin/shell.html" %}
+{% import "admin/_icons.html" as I %}
+{% block heading %}Account{% endblock %}
+{% block sub %}Your admin profile, password, and session{% endblock %}
+{% block content %}
+<div class="grid two">
+<div class="card"><div class="pad">
+<h3>Profile</h3><p class="muted" style="margin-top:0" id="acct-meta">Loading…</p>
+<dl class="kv" id="acct-kv" style="display:none">
+<dt>User ID</dt><dd id="acct-uid">—</dd>
+<dt>Role</dt><dd id="acct-role">—</dd>
+<dt>Email</dt><dd id="acct-email">—</dd>
+<dt>Security question</dt><dd id="acct-sec">—</dd>
+</dl>
+<div class="dnote" id="acct-must" style="display:none;margin-top:10px">You must change your password.</div>
+</div></div>
+<div class="card"><div class="pad">
+<h3>Session</h3><p class="muted" style="margin-top:0">Signed in on this browser.</p>
+<p style="margin-bottom:0"><button class="btn ghost" onclick="nhlsAdmin.logout()">Sign out</button></p>
+</div></div>
+</div>
+<div class="grid two" style="margin-top:14px">
+<div class="card"><div class="pad">
+<h3>Edit profile</h3><p class="muted" style="margin-top:0">Name and phone only.</p>
+<div><label class="f" for="acct-name">Full name</label><div class="field">{{ I.icon('user') }}<input class="input" id="acct-name" autocomplete="name"></div></div>
+<div style="margin-top:10px"><label class="f" for="acct-phone">Phone</label><div class="field">{{ I.icon('phone') }}<input class="input" id="acct-phone" autocomplete="tel"></div></div>
+<div id="acct-edit-result" style="margin-top:10px"></div>
+<p style="margin-bottom:0"><button class="btn" id="acct-save" onclick="saveProfile(this)">Save changes</button></p>
+</div></div>
+<div class="card"><div class="pad">
+<h3>Change password</h3><p class="muted" style="margin-top:0">Current password required.</p>
+<div><label class="f" for="acct-cur">Current password</label><div class="field">{{ I.icon('lock') }}<input class="input" id="acct-cur" type="password" autocomplete="current-password"></div></div>
+<div style="margin-top:10px"><label class="f" for="acct-new">New password</label><div class="field">{{ I.icon('lock') }}<input class="input" id="acct-new" type="password" autocomplete="new-password"></div></div>
+<div id="acct-pw-result" style="margin-top:10px"></div>
+<p style="margin-bottom:0"><button class="btn" id="acct-pw" onclick="changePassword(this)">Change password</button></p>
+</div></div>
+</div>
+<script>
+var ACCT_H = function(){ return { 'Authorization': 'Bearer ' + localStorage.getItem('nhls_admin_token'), 'Content-Type': 'application/json' }; };
+function acctErr(box, msg){ document.getElementById(box).innerHTML = '<div class="alert err">' + msg + '</div>'; }
+function acctOk(box, msg){ document.getElementById(box).innerHTML = '<div class="alert ok">' + msg + '</div>'; }
+async function loadAccount(){
+  try {
+    var r = await fetch('/api/auth/me', { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('nhls_admin_token') } });
+    if (r.status === 401) return window.nhlsAdmin.logout();
+    if (!r.ok) { document.getElementById('acct-meta').textContent = 'Could not load profile (HTTP ' + r.status + ').'; return; }
+    var u = (await r.json()).user || {};
+    document.getElementById('acct-meta').textContent = u.full_name + ' (' + u.user_id + ')';
+    document.getElementById('acct-kv').style.display = '';
+    document.getElementById('acct-uid').textContent = u.user_id || '—';
+    document.getElementById('acct-role').textContent = (u.role || '').replace(/_/g, ' ') || '—';
+    document.getElementById('acct-email').textContent = u.email || '—';
+    document.getElementById('acct-sec').textContent = u.security_question || 'Not set';
+    document.getElementById('acct-name').value = u.full_name || '';
+    document.getElementById('acct-phone').value = u.phone || '';
+    if (u.must_change_password) document.getElementById('acct-must').style.display = '';
+    try {
+      var cached = window.nhlsAdmin.user() || {};
+      cached.full_name = u.full_name; cached.phone = u.phone;
+      localStorage.setItem('nhls_admin_user', JSON.stringify(cached));
+    } catch (e) {}
+  } catch (e) { document.getElementById('acct-meta').textContent = 'Network error loading profile.'; }
+}
+async function saveProfile(btn){
+  btn.disabled = true;
+  try {
+    var r = await fetch('/api/auth/me', { method: 'PATCH', headers: ACCT_H(), body: JSON.stringify({ full_name: document.getElementById('acct-name').value, phone: document.getElementById('acct-phone').value }) });
+    var d = await r.json().catch(function(){ return {}; });
+    if (!r.ok) { acctErr('acct-edit-result', (d && d.error) || ('HTTP ' + r.status)); return; }
+    acctOk('acct-edit-result', 'Profile updated.');
+    loadAccount();
+  } catch (e) { acctErr('acct-edit-result', 'Network error. Try again.'); }
+  finally { btn.disabled = false; }
+}
+async function changePassword(btn){
+  btn.disabled = true;
+  try {
+    var r = await fetch('/api/auth/me/password', { method: 'PUT', headers: ACCT_H(), body: JSON.stringify({ current_password: document.getElementById('acct-cur').value, new_password: document.getElementById('acct-new').value }) });
+    var d = await r.json().catch(function(){ return {}; });
+    if (!r.ok) {
+      var msg = (d && d.error) || ('HTTP ' + r.status);
+      if (d && d.details) msg += ': ' + (Array.isArray(d.details) ? d.details.join('; ') : JSON.stringify(d.details));
+      acctErr('acct-pw-result', msg); return;
+    }
+    acctOk('acct-pw-result', 'Password changed.');
+    document.getElementById('acct-cur').value = ''; document.getElementById('acct-new').value = '';
+    document.getElementById('acct-must').style.display = 'none';
+  } catch (e) { acctErr('acct-pw-result', 'Network error. Try again.'); }
+  finally { btn.disabled = false; }
+}
+loadAccount();
+</script>
+{% endblock %}

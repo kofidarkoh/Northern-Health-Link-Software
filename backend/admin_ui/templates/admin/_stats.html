@@ -1,0 +1,29 @@
+{% import "admin/_icons.html" as I %}
+<div class="grid stats">
+  {% for s in [
+    ('Users', stats.total_users, 'users', 'green', '/admin/users'),
+    ('Clinics', stats.total_clinics, 'clinic', '', '/admin/clinics'),
+    ('Patients', stats.total_patients, 'patient', 'blue', '/admin/patients'),
+    ('Appointments', stats.total_appointments, 'appt', 'violet', '/admin/appointments'),
+    ('Pending Labs', stats.pending_lab_requests, 'lab', 'amber', '/admin/labs?status=REQUESTED'),
+    ('Pending Deliveries', stats.pending_deliveries, 'truck', 'amber', '/admin/deliveries?status=PENDING'),
+    ('Unread alerts', stats.unread_notifications, 'bell', 'red', '/admin/notifications'),
+    ('Active riders', stats.active_riders, 'truck', 'green', '/admin/users?role=RIDER'),
+  ] %}
+  <a href="{{ s[4] }}" style="text-decoration:none;color:inherit"><div class="card stat {{ s[3] }}">
+    <span class="tile">{{ I.icon(s[2]) }}</span>
+    <div><div class="num">{{ s[1] }}</div><div class="lbl">{{ s[0] }}</div></div>
+  </div></a>
+  {% endfor %}
+</div>
+<div class="card" style="margin-top:14px"><div class="pad">
+  <h3>Quick actions</h3>
+  <div class="quick-grid">
+    <a class="quick" href="/admin/users">{{ I.icon('plus') }} Add user</a>
+    <a class="quick" href="/admin/patients">{{ I.icon('patient') }} Find patient</a>
+    <a class="quick" href="/admin/appointments">{{ I.icon('video') }} Consultations</a>
+    <a class="quick" href="/admin/labs">{{ I.icon('lab') }} Lab queue</a>
+    <a class="quick" href="/admin/prescriptions">{{ I.icon('pill') }} Prescriptions</a>
+    <a class="quick" href="/admin/notifications">{{ I.icon('send') }} Broadcast</a>
+  </div>
+</div></div>

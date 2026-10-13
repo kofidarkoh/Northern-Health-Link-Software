@@ -1,0 +1,16 @@
+<p class="muted">{{ total }} appointments — page {{ page }} / {{ total_pages }}</p>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>When</th><th>Patient</th><th class="hide-sm">Specialist</th><th>Status</th><th class="hide-sm">Video</th><th>Admin</th></tr>
+{% for a in appointments %}
+<tr><td style="white-space:nowrap">{{ a.appointment_time.strftime('%Y-%m-%d %H:%M') if a.appointment_time else '—' }}</td>
+<td class="rowlink" onclick="openDetail('/admin/partials/appointments/{{ a.id }}')"><b class="t">{{ patients.get(a.patient_id, '—') }}</b></td><td class="hide-sm">{{ users.get(a.specialist_id, '—') }}</td>
+<td>{% if a.status == 'COMPLETED' %}<span class="pill p-green">COMPLETED</span>{% elif a.status == 'CANCELLED' %}<span class="pill p-red">CANCELLED</span>{% elif a.status == 'IN_PROGRESS' %}<span class="pill p-blue">IN PROGRESS</span>{% elif a.status == 'SCHEDULED' %}<span class="pill p-violet">SCHEDULED</span>{% else %}<span class="pill p-amber">REQUESTED</span>{% endif %}</td>
+<td class="hide-sm">{% if a.video_room_url %}<a href="{{ a.video_room_url }}" target="_blank">Join</a>{% else %}—{% endif %}</td>
+<td><form hx-post="/admin/actions/appointments/{{ a.id }}/status" hx-swap="innerHTML" hx-target="#ar-{{ a.id }}" hx-on::response-error="document.getElementById('ar-{{ a.id }}').innerHTML=event.detail.xhr.responseText" hx-on::after-request="if(event.detail.successful)refreshAppts()" style="display:flex;gap:6px;align-items:center;flex-wrap:wrap"><select class="select" name="status" style="min-width:130px" aria-label="Appointment status">{% for s in ['REQUESTED','SCHEDULED','IN_PROGRESS','COMPLETED','CANCELLED'] %}<option value="{{ s }}" {% if a.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select><button class="btn ghost sm" type="submit">Set</button></form><div id="ar-{{ a.id }}"></div></td></tr>
+{% else %}<tr><td colspan="6"><div class="empty">No appointments found.</div></td></tr>{% endfor %}
+</table></div>
+{% if total_pages > 1 %}<div class="pager">
+{% if page > 1 %}<button class="btn ghost sm" hx-get="/admin/partials/appointments?page={{ page-1 }}&status={{ status }}&specialist_id={{ specialist_id }}&clinic_id={{ clinic_id }}&date_from={{ date_from }}&date_to={{ date_to }}&q={{ q }}" hx-target="#atable">← Prev</button>{% endif %}
+<span>Page {{ page }} / {{ total_pages }}</span>
+{% if page < total_pages %}<button class="btn ghost sm" hx-get="/admin/partials/appointments?page={{ page+1 }}&status={{ status }}&specialist_id={{ specialist_id }}&clinic_id={{ clinic_id }}&date_from={{ date_from }}&date_to={{ date_to }}&q={{ q }}" hx-target="#atable">Next →</button>{% endif %}
+</div>{% endif %}

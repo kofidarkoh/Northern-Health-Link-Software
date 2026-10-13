@@ -1,0 +1,17 @@
+<p class="muted">{{ total }} consultation notes — page {{ page }} / {{ total_pages }}</p>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Date</th><th>Patient</th><th class="hide-sm">Specialist</th><th>Diagnosis</th><th class="hide-sm">Rx</th></tr>
+{% for n in notes %}
+{% set a = appts.get(n.appointment_id) %}
+<tr><td style="white-space:nowrap">{{ n.created_at.strftime('%Y-%m-%d %H:%M') if n.created_at else '—' }}</td>
+<td class="rowlink" onclick="openDetail('/admin/partials/appointments/{{ n.appointment_id }}')"><b class="t">{{ patients.get(a.patient_id, '—') if a else '—' }}</b><br><small class="muted">Appt #{{ n.appointment_id }}{% if a %} · {{ a.status }}{% endif %}</small></td>
+<td class="hide-sm">{{ users.get(n.specialist_id, '—') }}</td>
+<td><b>{{ (n.diagnosis or '')[:80] }}</b>{% if n.referral_notes %}<br><small class="muted">Referral: {{ (n.referral_notes or '')[:80] }}</small>{% endif %}{% if n.treatment_instructions %}<br><small class="muted">Treatment: {{ (n.treatment_instructions or '')[:80] }}</small>{% endif %}</td>
+<td class="hide-sm">{% if rx_counts.get(n.id) %}<span class="pill p-green">{{ rx_counts.get(n.id) }} Rx</span>{% else %}<span class="muted">—</span>{% endif %}</td></tr>
+{% else %}<tr><td colspan="5"><div class="empty">No consultation notes found.</div></td></tr>{% endfor %}
+</table></div>
+{% if total_pages > 1 %}<div class="pager">
+{% if page > 1 %}<button class="btn ghost sm" hx-get="/admin/partials/consultations?page={{ page-1 }}&q={{ q }}&specialist_id={{ specialist_id }}" hx-target="#ctable">← Prev</button>{% endif %}
+<span>Page {{ page }} / {{ total_pages }}</span>
+{% if page < total_pages %}<button class="btn ghost sm" hx-get="/admin/partials/consultations?page={{ page+1 }}&q={{ q }}&specialist_id={{ specialist_id }}" hx-target="#ctable">Next →</button>{% endif %}
+</div>{% endif %}

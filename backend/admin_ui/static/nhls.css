@@ -1,0 +1,73 @@
+/* NHLS admin theme — overrides on top of vendored W3.CSS */
+:root {
+  --primary: #2D3E18;
+  --primary-light: #4A5F2E;
+  --primary-dark: #1E2A10;
+  --secondary: #FFC107;
+  --bg: #F4F6F1;
+  --surface: #FFFFFF;
+  --text: #1A1A1A;
+  --muted: #6C757D;
+  --border: #E3E7DF;
+  --danger: #DC3545;
+  --ok: #2E7D32;
+  --radius: 14px;
+}
+
+body { background: var(--bg); color: var(--text); font-family: "Segoe UI", system-ui, -apple-system, Arial, sans-serif; }
+
+.nhls-sidebar { background: var(--primary-dark) !important; color: #fff; width: 230px; }
+.nhls-sidebar .w3-bar-item { color: rgba(255,255,255,.82); padding: 12px 20px !important; }
+.nhls-sidebar .w3-bar-item:hover { background: rgba(255,255,255,.08) !important; color: #fff !important; }
+.nhls-sidebar .w3-bar-item.active { background: var(--primary) !important; color: #fff !important; border-left: 4px solid var(--secondary); }
+.nhls-brand { padding: 20px; border-bottom: 1px solid rgba(255,255,255,.12); }
+.nhls-brand h3 { margin: 0; font-size: 17px; font-weight: 800; }
+.nhls-brand small { color: var(--secondary); letter-spacing: 1px; font-size: 10px; font-weight: 700; }
+
+.nhls-main { margin-left: 230px; }
+.nhls-topbar { background: var(--surface); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 5; }
+.nhls-content { padding: 24px; max-width: 1200px; }
+
+.nhls-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); }
+.nhls-stat { border-left: 5px solid var(--primary); }
+.nhls-stat .num { font-size: 30px; font-weight: 800; color: var(--primary); }
+.nhls-stat .lbl { color: var(--muted); font-size: 12px; text-transform: uppercase; letter-spacing: .6px; }
+
+.nhls-btn { background: var(--primary) !important; color: #fff !important; border-radius: 10px !important; }
+.nhls-btn:hover { background: var(--primary-light) !important; }
+.nhls-btn-amber { background: var(--secondary) !important; color: #1A1A1A !important; border-radius: 10px !important; }
+.nhls-btn-danger { background: var(--danger) !important; color: #fff !important; border-radius: 10px !important; }
+
+table.nhls-table { border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #fff; }
+table.nhls-table th { background: var(--primary); color: #fff; font-weight: 700; }
+table.nhls-table tr:nth-child(even) { background: #FAFBF8; }
+table.nhls-table tr:hover { background: #EFF3E9; }
+
+.nhls-input, .nhls-select { border: 1px solid var(--border) !important; border-radius: 10px !important; }
+.nhls-input:focus, .nhls-select:focus { border-color: var(--primary) !important; outline: none; box-shadow: 0 0 0 2px rgba(45,62,24,.12); }
+
+.role-tag { display: inline-block; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 800; letter-spacing: .4px; }
+.role-ADMIN { background: #FDECEA; color: #C62828; }
+.role-CLINIC_STAFF { background: #E1F5FE; color: #0277BD; }
+.role-SPECIALIST { background: #E8F5E9; color: #2E7D32; }
+.role-LAB_OFFICER { background: #FFF8E1; color: #9A6D00; }
+.role-RIDER { background: #EDE7F6; color: #5E35B1; }
+
+.htmx-indicator { display: none; }
+.htmx-request .htmx-indicator { display: inline-block; }
+.htmx-request.htmx-indicator { display: inline-block; }
+.spinner { border: 3px solid var(--border); border-top: 3px solid var(--primary); border-radius: 50%; width: 22px; height: 22px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* Mobile: sidebar becomes top bar, tables scroll, cards stack */
+.nhls-menu-btn { display: none !important; }
+@media (max-width: 768px) {
+  .nhls-sidebar { display: none; width: 100%; }
+  .nhls-sidebar.open { display: block; }
+  .nhls-main { margin-left: 0; }
+  .nhls-menu-btn { display: inline-block !important; }
+  .nhls-content { padding: 14px; }
+  .table-scroll { overflow-x: auto; }
+  .table-scroll table { min-width: 640px; }
+  .nhls-hide-sm { display: none !important; }
+}

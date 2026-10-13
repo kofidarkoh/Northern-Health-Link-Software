@@ -1,0 +1,17 @@
+{% extends "admin/shell.html" %}
+{% import "admin/_icons.html" as I %}
+{% block heading %}Audit Logs{% endblock %}
+{% block sub %}System activity trail — click View for full event details{% endblock %}
+{% block content %}
+<div class="card"><div class="pad"><div class="filters" style="grid-template-columns:1fr 1fr auto">
+<div><label class="f">Entity type</label><div class="field">{{ I.icon('tag') }}<select id="fentity" name="entity_type" class="select" hx-get="/admin/partials/audit-logs" hx-trigger="change" hx-target="#audit-table" hx-include="#fuser">
+<option value="">All entity types</option>
+{% for e in ['users','patients','appointments','consultation_notes','lab_requests','lab_results','prescriptions','deliveries','clinics','notifications','system_settings'] %}<option value="{{ e }}">{{ e }}</option>{% endfor %}
+</select></div></div>
+<div><label class="f">User</label><div class="field">{{ I.icon('user') }}<select id="fuser" name="user_id" class="select" hx-get="/admin/partials/audit-logs" hx-trigger="change" hx-target="#audit-table" hx-include="#fentity">
+<option value="">All users</option>{% for u in users %}<option value="{{ u.id }}">{{ u.full_name }} ({{ u.user_id }})</option>{% endfor %}
+</select></div></div>
+<div style="align-self:end"><button class="btn ghost" onclick="htmx.ajax('GET','/admin/partials/audit-logs?entity_type='+document.getElementById('fentity').value+'&user_id='+document.getElementById('fuser').value,'#audit-table')">Refresh</button></div>
+</div></div></div>
+<div id="audit-table" hx-get="/admin/partials/audit-logs" hx-trigger="load" hx-swap="innerHTML" style="margin-top:14px"><p><span class="spinner"></span> Loading…</p></div>
+{% endblock %}

@@ -1,0 +1,15 @@
+<p class="muted">{{ total }} prescriptions — page {{ page }} / {{ total_pages }}</p>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Medication</th><th>Patient</th><th class="hide-sm">Prescribed by</th><th class="hide-sm">Dosage</th><th>Delivery</th></tr>
+{% for p in prescriptions %}
+<tr><td class="rowlink" onclick="openDetail('/admin/partials/prescriptions/{{ p.id }}')"><b class="t">{{ p.medication_name }}</b><br><small class="muted">{{ p.frequency or '' }} {{ p.duration or '' }}</small></td>
+<td>{{ patients.get(p.patient_id, '—') }}</td><td class="hide-sm">{{ users.get(p.prescribed_by_id, '—') }}</td>
+<td class="hide-sm">{{ p.dosage }}</td>
+<td>{% set ds = dstatus.get(p.id, '') %}{% if ds == 'DELIVERED' %}<span class="pill p-green">DELIVERED</span>{% elif ds == 'FAILED' %}<span class="pill p-red">FAILED</span>{% elif ds %}<span class="pill p-blue">{{ ds.replace('_', ' ') }}</span>{% else %}<span class="pill p-grey">NONE</span>{% endif %}</td></tr>
+{% else %}<tr><td colspan="5"><div class="empty">No prescriptions found.</div></td></tr>{% endfor %}
+</table></div>
+{% if total_pages > 1 %}<div class="pager">
+{% if page > 1 %}<button class="btn ghost sm" hx-get="/admin/partials/prescriptions?page={{ page-1 }}&q={{ q }}&dst={{ dst }}" hx-target="#rxtable">← Prev</button>{% endif %}
+<span>Page {{ page }} / {{ total_pages }}</span>
+{% if page < total_pages %}<button class="btn ghost sm" hx-get="/admin/partials/prescriptions?page={{ page+1 }}&q={{ q }}&dst={{ dst }}" hx-target="#rxtable">Next →</button>{% endif %}
+</div>{% endif %}

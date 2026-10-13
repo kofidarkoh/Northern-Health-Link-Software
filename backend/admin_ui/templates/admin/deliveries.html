@@ -1,0 +1,18 @@
+{% extends "admin/shell.html" %}
+{% import "admin/_icons.html" as I %}
+{% block heading %}Deliveries{% endblock %}
+{% block sub %}Motorcycle fleet — last-mile medication tracking — click a row for details{% endblock %}
+{% block content %}
+<script>
+function refreshDeliveries(){
+  var v = function(id){ var el = document.getElementById(id); return el ? el.value : ''; };
+  htmx.ajax('GET', '/admin/partials/deliveries?' + new URLSearchParams({ status: v('dstatus'), rider_id: v('drider'), q: v('dq') }).toString(), '#dtable');
+}
+</script>
+<div class="card"><div class="pad"><div class="filters" style="grid-template-columns:1fr 1fr 1fr">
+<div><label class="f">Status</label><div class="field">{{ I.icon('tag') }}<select id="dstatus" name="status" class="select" hx-get="/admin/partials/deliveries" hx-trigger="change" hx-target="#dtable" hx-include="#drider,#dq"><option value="">All</option>{% for s in ['PENDING','PICKED_UP','IN_TRANSIT','DELIVERED','FAILED'] %}<option value="{{ s }}">{{ s }}</option>{% endfor %}</select></div></div>
+<div><label class="f">Rider</label><div class="field">{{ I.icon('user') }}<select id="drider" name="rider_id" class="select" hx-get="/admin/partials/deliveries" hx-trigger="change" hx-target="#dtable" hx-include="#dstatus,#dq"><option value="">All riders</option><option value="__none">Unassigned only</option>{% for r in riders %}<option value="{{ r.id }}">{{ r.full_name }}</option>{% endfor %}</select></div></div>
+<div><label class="f">Search</label><div class="field">{{ I.icon('search') }}<input id="dq" name="q" class="input" placeholder="Address, rider…" hx-get="/admin/partials/deliveries" hx-trigger="keyup changed delay:400ms" hx-target="#dtable" hx-include="#dstatus,#drider"></div></div>
+</div></div></div>
+<div id="dtable" hx-get="/admin/partials/deliveries" hx-trigger="load" hx-swap="innerHTML" style="margin-top:14px"><p><span class="spinner"></span> Loading…</p></div>
+{% endblock %}

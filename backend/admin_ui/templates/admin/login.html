@@ -1,0 +1,51 @@
+{% extends "admin/base.html" %}
+{% import "admin/_icons.html" as I %}
+{% block title %}NHLS Admin — Login{% endblock %}
+{% block body %}
+<div class="login-wrap">
+  <div class="login-card">
+    <div class="login-brand">
+      <img src="{{ static_ver('logo.png') }}" alt="Northern Health Link logo">
+      <h2 style="margin:0">Northern Health Link</h2>
+      <p style="margin:0;color:rgba(255,255,255,.8)">Admin Console — connect rural clinics in Karaga, Gushegu & beyond with specialists in Tamale.</p>
+      <ul>
+        <li>✓ Video consultations & referrals</li>
+        <li>✓ Lab requests → digital results</li>
+        <li>✓ e-Prescriptions + rider deliveries</li>
+        <li>✓ Audit trail & notifications</li>
+      </ul>
+    </div>
+    <div class="login-form">
+      <h3 style="margin-top:0;color:#1E2A10">Sign in</h3>
+      <p class="muted">Use your administrator User ID.</p>
+      <div id="login-error"></div>
+      <form id="login-form">
+        <label class="f">User ID</label>
+        <div class="field">{{ I.icon('user') }}<input class="input" id="user_id" placeholder="e.g. AD-100001" autocomplete="username"></div>
+        <label class="f" style="margin-top:10px">Password</label>
+        <div class="field">{{ I.icon('lock') }}<input class="input" id="password" type="password" autocomplete="current-password"></div>
+        <button class="btn" style="width:100%;justify-content:center;margin-top:14px" type="submit" id="login-btn">Sign In</button>
+      </form>
+    </div>
+  </div>
+</div>
+<script>
+document.getElementById('login-form').addEventListener('submit', async function (ev) {
+  ev.preventDefault();
+  var btn = document.getElementById('login-btn'), errBox = document.getElementById('login-error');
+  btn.disabled = true;
+  try {
+    var res = await fetch('/api/auth/login', { method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ user_id: document.getElementById('user_id').value.trim(), password: document.getElementById('password').value }) });
+    var ct = res.headers.get('content-type') || '', data;
+    if (ct.includes('application/json')) data = await res.json();
+    else throw new Error('API unreachable (got ' + res.status + '). Open via Flask (http://localhost:5000/admin/login).');
+    if (!res.ok) throw new Error(data.error || 'Login failed');
+    if (data.user.role !== 'ADMIN') throw new Error('This console is for administrators only.');
+    window.nhlsAdmin.saveSession(data.access_token, data.user);
+    window.location = '/admin/';
+  } catch (e) { errBox.innerHTML = '<div class="alert err">' + e.message + '</div>'; }
+  finally { btn.disabled = false; }
+});
+</script>
+{% endblock %}

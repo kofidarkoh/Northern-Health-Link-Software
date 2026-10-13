@@ -1,0 +1,207 @@
+{% extends "admin/shell.html" %}
+{% import "admin/_icons.html" as I %}
+{% block heading %}Users{% endblock %}
+{% block sub %}Admins, clinic staff, specialists, lab officers, riders{% endblock %}
+{% block content %}
+<div class="card"><div class="pad">
+  <div class="filters">
+    <div><label class="f">Search</label><div class="field">{{ I.icon('search') }}<input id="fq" name="q" class="input" placeholder="Name, ID, email…" hx-get="/admin/partials/users" hx-trigger="keyup changed delay:400ms" hx-target="#user-table" hx-include="#frole,#fclinic"></div></div>
+    <div><label class="f">Role</label><div class="field">{{ I.icon('tag') }}<select id="frole" name="role" class="select" hx-get="/admin/partials/users" hx-trigger="change" hx-target="#user-table" hx-include="#fq,#fclinic">
+      <option value="">All roles</option>
+      {% for r in ['ADMIN','CLINIC_STAFF','SPECIALIST','LAB_OFFICER','RIDER'] %}<option value="{{ r }}">{{ r.replace('_',' ') }}</option>{% endfor %}
+    </select></div></div>
+    <div><label class="f">Clinic</label><div class="field">{{ I.icon('clinic') }}<select id="fclinic" name="clinic_id" class="select" hx-get="/admin/partials/users" hx-trigger="change" hx-target="#user-table" hx-include="#fq,#frole">
+      <option value="">All clinics</option>{% for c in clinics %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}
+    </select></div></div>
+    <div style="align-self:end"><button class="btn" onclick="document.getElementById('create-modal').classList.add('open')">+ Add User</button></div>
+  </div>
+</div></div>
+<div id="user-table" hx-get="/admin/partials/users" hx-trigger="load" hx-swap="innerHTML" style="margin-top:14px"><p><span class="spinner"></span> Loading…</p></div>
+<div id="create-modal" class="overlay"><div class="modal"><div class="pad">
+  <h3>New user</h3>
+  <form hx-post="/admin/actions/users" hx-target="#create-result" hx-swap="innerHTML" hx-disabled-elt="button[type=submit]" hx-on::after-request="if(event.detail.successful){this.reset();clearAvatarPreview('create-preview','create-pic');refreshUsers();pushToast('User created','The new account is now in the table.')}">
+    <label class="f">Full name</label><div class="field">{{ I.icon('user') }}<input class="input" name="full_name" required></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+      <div><label class="f">Role</label><div class="field">{{ I.icon('tag') }}<select class="select" name="role" required>{% for r in ['ADMIN','CLINIC_STAFF','SPECIALIST','LAB_OFFICER','RIDER'] %}<option value="{{ r }}">{{ r.replace('_',' ') }}</option>{% endfor %}</select></div></div>
+      <div><label class="f">Clinic</label><div class="field">{{ I.icon('clinic') }}<select class="select" name="clinic_id"><option value="">—</option>{% for c in clinics %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+      <div><label class="f">Email (optional)</label><div class="field">{{ I.icon('mail') }}<input class="input" name="email" type="email"></div></div>
+      <div><label class="f">Phone (optional)</label><div class="field">{{ I.icon('phone') }}<input class="input" name="phone"></div></div>
+    </div>
+    <div style="margin-top:10px"><label class="f">Speciality (optional, e.g. Cardiology)</label><div class="field">{{ I.icon('doc') }}<input class="input" name="speciality"></div></div>
+    <div style="margin-top:10px"><label class="f">Password (min 8, upper + lower + digit)</label><div class="field">{{ I.icon('lock') }}<input class="input" name="password" id="create-pass" type="password" required minlength="8" style="padding-right:42px"><button type="button" class="pw-toggle" onclick="togglePw('create-pass', this)" aria-label="Show password">{{ I.icon('eye') }}</button></div></div>
+    <div style="margin-top:10px"><label class="f">Photo (optional, jpg/png/webp, max 2MB)</label><input class="input" type="file" accept=".jpg,.jpeg,.png,.webp" onchange="uploadAvatar(this, 'create-preview', 'create-pic')"><input type="hidden" name="profile_picture" id="create-pic"><p><img id="create-preview" style="display:none;max-width:120px;border-radius:12px;" alt="preview"></p></div>
+    <div id="create-result" style="margin-top:10px"></div>
+    <p class="toolbar"><button class="btn" type="submit">Create</button><button class="btn ghost" type="button" onclick="document.getElementById('create-modal').classList.remove('open')">Close</button></p>
+  </form>
+</div></div></div>
+<div id="temp-modal" class="overlay"><div class="modal"><div class="pad">
+  <h3>Temporary password</h3><p class="muted">Share securely — shown once.</p>
+  <p class="alert ok" id="temp-password" style="user-select:all;font-size:18px"></p>
+  <p class="toolbar"><button class="btn amber" onclick="navigator.clipboard.writeText(document.getElementById('temp-password').textContent);this.textContent='Copied!'">Copy</button>
+  <button class="btn ghost" onclick="document.getElementById('temp-modal').classList.remove('open')">Done</button></p>
+</div></div></div>
+<div id="confirm-modal" class="overlay"><div class="modal"><div class="pad">
+  <h3>Are you sure?</h3>
+  <p class="muted" id="confirm-msg"></p>
+  <p class="toolbar"><button class="btn ghost" onclick="closeConfirm()">Cancel</button>
+  <button class="btn danger" onclick="runConfirm()">Confirm</button></p>
+</div></div></div>
+<div id="delete-modal" class="overlay"><div class="modal"><div class="pad">
+  <h3>Deactivate user</h3>
+  <p><b id="del-target"></b></p>
+  <p class="muted">Deactivating removes their access immediately (soft delete — recoverable in the database).</p>
+  <label class="f">Type the user's name or ID to confirm</label>
+  <div class="field">{{ I.icon('doc') }}<input class="input" id="del-confirm-input" placeholder="Name or user ID" autocomplete="off" oninput="checkDeleteMatch()"></div>
+  <p class="toolbar"><button class="btn ghost" onclick="closeDeleteModal()">Cancel</button>
+  <button class="btn danger" id="del-confirm-btn" disabled onclick="runDelete()">Deactivate</button></p>
+</div></div></div>
+<div id="edit-modal" class="overlay"><div class="modal"><div class="pad">
+  <h3>Edit user</h3>
+  <form id="edit-form" hx-post="/admin/actions/users/0/edit" hx-target="#edit-result" hx-swap="innerHTML" hx-disabled-elt="button[type=submit]" hx-on::after-request="if(event.detail.successful)refreshUsers()">
+    <label class="f">Full name</label><div class="field">{{ I.icon('user') }}<input class="input" name="full_name" id="eu-name" required></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+      <div><label class="f">Role</label><div class="field">{{ I.icon('tag') }}<select class="select" name="role" id="eu-role">{% for r in ['ADMIN','CLINIC_STAFF','SPECIALIST','LAB_OFFICER','RIDER'] %}<option value="{{ r }}">{{ r.replace('_',' ') }}</option>{% endfor %}</select></div></div>
+      <div><label class="f">Clinic</label><div class="field">{{ I.icon('clinic') }}<select class="select" name="clinic_id" id="eu-clinic"><option value="">—</option>{% for c in clinics %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+      <div><label class="f">Email</label><div class="field">{{ I.icon('mail') }}<input class="input" name="email" id="eu-email" type="email"></div></div>
+      <div><label class="f">Phone</label><div class="field">{{ I.icon('phone') }}<input class="input" name="phone" id="eu-phone"></div></div>
+    </div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+      <div><label class="f">Speciality</label><div class="field">{{ I.icon('doc') }}<input class="input" name="speciality" id="eu-spec"></div></div>
+      <div><label class="f">Active</label><div class="field">{{ I.icon('tag') }}<select class="select" name="active" id="eu-active"><option value="1">Active</option><option value="0">Inactive</option></select></div></div>
+    </div>
+    <div style="margin-top:10px"><label class="f">Photo (optional, jpg/png/webp, max 2MB)</label><input class="input" type="file" accept=".jpg,.jpeg,.png,.webp" onchange="uploadAvatar(this, 'eu-preview', 'eu-pic')"><input type="hidden" name="profile_picture" id="eu-pic"><p><img id="eu-preview" style="display:none;max-width:120px;border-radius:12px;" alt="preview"></p></div>
+    <div id="edit-result" style="margin-top:10px"></div>
+    <p class="toolbar"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" onclick="document.getElementById('edit-modal').classList.remove('open');refreshUsers()">Close & refresh</button></p>
+  </form>
+</div></div></div>
+<script>
+  function authHeaders() {
+    return { 'Authorization': 'Bearer ' + localStorage.getItem('nhls_admin_token') };
+  }
+  function refreshUsers() {
+    var q = document.getElementById('fq'), r = document.getElementById('frole'),
+        cl = document.getElementById('fclinic');
+    var params = new URLSearchParams({
+      q: q ? q.value : '', role: r ? r.value : '', clinic_id: cl ? cl.value : '' });
+    htmx.ajax('GET', '/admin/partials/users?' + params.toString(), '#user-table');
+  }
+  async function uploadAvatar(input, previewId, hiddenId) {
+    var file = input.files && input.files[0];
+    if (!file) return;
+    var fd = new FormData();
+    fd.append('file', file);
+    var res = await fetch('/api/admin/avatar', { method: 'POST', headers: authHeaders(), body: fd });
+    var data = await res.json().catch(() => ({}));
+    if (!res.ok) return pushToast('Upload failed', data.error || 'The photo could not be uploaded.');
+    document.getElementById(hiddenId).value = data.file_url;
+    var img = document.getElementById(previewId);
+    img.src = '/' + data.file_url + '?token=' + encodeURIComponent(localStorage.getItem('nhls_admin_token'));
+    img.style.display = 'block';
+  }
+  function clearAvatarPreview(previewId, hiddenId){
+    document.getElementById(hiddenId).value = '';
+    document.getElementById(previewId).style.display = 'none';
+  }
+  var PW_ICONS = { show: {{ I.icon('eye')|tojson }}, hide: {{ I.icon('eye-off')|tojson }} };
+  function togglePw(inputId, btn){
+    var inp = document.getElementById(inputId);
+    var show = inp.type === 'password';
+    inp.type = show ? 'text' : 'password';
+    btn.innerHTML = show ? PW_ICONS.hide : PW_ICONS.show;
+    btn.setAttribute('aria-label', show ? 'Hide password' : 'Show password');
+  }
+function toggleActive(id, btn){
+  fetch('/admin/actions/users/'+id+'/status', { method:'POST', headers: authHeaders() }).then(async r => {
+    if (r.status===401) return window.nhlsAdmin.logout();
+    var html = await r.text();
+    if (!r.ok) return pushToast('Status change failed', 'Check your connection and try again.');
+    btn.innerHTML = html;
+    pushToast('Status updated', 'The user account status was changed.'); });
+}
+function resetPassword(id){
+  openConfirm('Set a new temporary password for this user? The user must change it on next login.', function () {
+    fetch('/admin/actions/users/'+id+'/reset-password', { method:'POST', headers: authHeaders() }).then(async r => {
+      if (r.status===401) return window.nhlsAdmin.logout(); var d = await r.json();
+      if (!r.ok) return pushToast('Reset failed', d.error || 'Could not reset the password.');
+      document.getElementById('temp-password').textContent = d.temporary_password;
+      document.getElementById('temp-modal').classList.add('open'); });
+  }); }
+var __del = null;
+function deleteUser(id, name, userId){
+  __del = { id: id, name: name, userId: userId };
+  document.getElementById('del-target').textContent = name + ' (' + userId + ')';
+  var inp = document.getElementById('del-confirm-input'), btn = document.getElementById('del-confirm-btn');
+  inp.value = '';
+  btn.disabled = true;
+  document.getElementById('delete-modal').classList.add('open');
+  inp.focus();
+}
+function checkDeleteMatch(){
+  if (!__del) return;
+  var v = document.getElementById('del-confirm-input').value.trim().toLowerCase();
+  var ok = v === String(__del.name).trim().toLowerCase() || v === String(__del.userId).trim().toLowerCase();
+  document.getElementById('del-confirm-btn').disabled = !ok;
+}
+function closeDeleteModal(){
+  document.getElementById('delete-modal').classList.remove('open');
+  __del = null;
+}
+function runDelete(){
+  if (!__del) return;
+  var id = __del.id, name = __del.name;
+  closeDeleteModal();
+  fetch('/admin/actions/users/'+id+'/delete', { method:'POST', headers: authHeaders() }).then(async r => {
+    if (r.status===401) return window.nhlsAdmin.logout(); var d = await r.json();
+    if (!r.ok) return pushToast('Delete failed', d.error || 'Could not deactivate the account.');
+    refreshUsers();
+    pushToast('Account deactivated', name + ' can no longer log in.'); });
+}
+var __confirmCb = null;
+function openConfirm(msg, cb) {
+  document.getElementById('confirm-msg').textContent = msg;
+  __confirmCb = cb;
+  document.getElementById('confirm-modal').classList.add('open');
+}
+function closeConfirm() {
+  document.getElementById('confirm-modal').classList.remove('open');
+  __confirmCb = null;
+}
+function runConfirm() {
+  var cb = __confirmCb;
+  closeConfirm();
+  if (cb) cb();
+}
+function openEditUser(id, name, role, clinic, spec, phone, email, active, pic){
+  var f = document.getElementById('edit-form');
+  f.setAttribute('hx-post', '/admin/actions/users/'+id+'/edit');
+  if (window.htmx) htmx.process(f);
+  document.getElementById('eu-name').value = name || '';
+  document.getElementById('eu-role').value = role || 'CLINIC_STAFF';
+  var cl = document.getElementById('eu-clinic');
+  cl.value = (clinic != null && clinic !== '' && cl.querySelector('option[value="'+clinic+'"]')) ? clinic : '';
+  document.getElementById('eu-spec').value = spec || '';
+  document.getElementById('eu-phone').value = phone || '';
+  document.getElementById('eu-email').value = email || '';
+  var isActive = !(active === false || active === 0 || active === '0');
+  document.getElementById('eu-active').value = isActive ? '1' : '0';
+  document.getElementById('eu-pic').value = pic || '';
+  var pv = document.getElementById('eu-preview');
+  if (pic) { pv.src = '/' + pic; pv.style.display = 'block'; } else { pv.style.display = 'none'; }
+  document.getElementById('edit-result').innerHTML = '';
+  document.getElementById('edit-modal').classList.add('open'); }
+function closeModals(){
+  ['create-modal','edit-modal','confirm-modal','temp-modal','delete-modal'].forEach(function(id){
+    document.getElementById(id).classList.remove('open');
+  });
+}
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeModals(); });
+['create-modal','edit-modal','confirm-modal','temp-modal','delete-modal'].forEach(function(id){
+  var el = document.getElementById(id);
+  el.addEventListener('click', function(e){ if (e.target === el) { el.classList.remove('open'); if (id === 'delete-modal') closeDeleteModal(); else if (id === 'confirm-modal') closeConfirm(); } });
+});
+</script>
+{% endblock %}

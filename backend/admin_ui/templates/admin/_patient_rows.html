@@ -1,0 +1,16 @@
+{% import "admin/_avatar.html" as A %}
+<p class="muted">{{ total }} patients — page {{ page }} / {{ total_pages }}</p>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Patient</th><th class="hide-sm">Age / Gender</th><th>District</th><th class="hide-sm">Address</th><th class="hide-sm">Clinic</th><th class="hide-sm">Registered</th></tr>
+{% for p in patients %}
+<tr><td class="rowlink" onclick="openDetail('/admin/partials/patients/{{ p.id }}')"><span class="celluser">{{ A.avatar(p.full_name, p.id, 34) }}<span><b class="t">{{ p.full_name }}</b><br><small class="muted">{{ p.contact_phone or '—' }}</small></span></span></td>
+<td class="hide-sm">{{ p.age or '—' }} / {{ p.gender }}</td><td>{{ p.district }}</td>
+<td class="hide-sm">{{ p.address or '—' }}</td>
+<td class="hide-sm">{{ clinics.get(p.clinic_id, '—') }}</td><td class="hide-sm" style="white-space:nowrap">{{ p.created_at.strftime('%Y-%m-%d') if p.created_at else '—' }}</td></tr>
+{% else %}<tr><td colspan="6"><div class="empty">No patients found.</div></td></tr>{% endfor %}
+</table></div>
+{% if total_pages > 1 %}<div class="pager">
+{% if page > 1 %}<button class="btn ghost sm" hx-get="/admin/partials/patients?page={{ page-1 }}&q={{ q }}&clinic_id={{ clinic_id }}&gender={{ gender }}" hx-target="#ptable">← Prev</button>{% endif %}
+<span>Page {{ page }} / {{ total_pages }}</span>
+{% if page < total_pages %}<button class="btn ghost sm" hx-get="/admin/partials/patients?page={{ page+1 }}&q={{ q }}&clinic_id={{ clinic_id }}&gender={{ gender }}" hx-target="#ptable">Next →</button>{% endif %}
+</div>{% endif %}

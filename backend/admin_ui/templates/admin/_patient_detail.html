@@ -1,0 +1,24 @@
+{% import "admin/_avatar.html" as A %}
+{% import "admin/_icons.html" as I %}
+{% set d_title %}Patient #{{ p.id }}{% endset %}
+{% set d_sub %}{{ p.district }}{% endset %}
+{% include "admin/_detail_head.html" %}
+<p class="celluser" style="margin:12px 0">{{ A.avatar(p.full_name, p.id, 46) }}<span><b style="font-size:17px">{{ p.full_name }}</b><br><small class="muted">{{ p.contact_phone or 'No phone' }} · {{ p.age or '—' }} · {{ p.gender or '—' }}</small></span></p>
+<div class="dsec"><h4>{{ I.icon('patient') }} Profile</h4>
+<dl class="kv">
+<dt>Clinic</dt><dd>{{ clinic.name if clinic else '—' }}</dd>
+<dt>Address</dt><dd>{{ p.address or '—' }}</dd>
+<dt>Registered by</dt><dd>{{ reg.full_name ~ ' (' ~ reg.user_id ~ ')' if reg else '—' }}</dd>
+<dt>Registered</dt><dd>{{ p.created_at.strftime('%Y-%m-%d %H:%M') if p.created_at else '—' }}</dd>
+<dt>Medical history</dt><dd>{{ p.medical_history or '—' }}</dd>
+<dt>Emergency contact</dt><dd>{{ p.emergency_contact or '—' }}</dd>
+</dl></div>
+<div class="dsec"><h4>{{ I.icon('appt') }} Appointments ({{ appts|length }})</h4>
+{% for a in appts %}<a class="drow" href="#" onclick="openDetail('/admin/partials/appointments/{{ a.id }}');return false;"><span class="grow"><b>Appt #{{ a.id }}</b><small>{{ a.appointment_time.strftime('%Y-%m-%d %H:%M') if a.appointment_time else 'No time set' }} · {{ users.get(a.specialist_id, '—') }}</small></span><span class="pill {% if a.status == 'COMPLETED' %}p-green{% elif a.status == 'CANCELLED' %}p-red{% elif a.status == 'IN_PROGRESS' %}p-blue{% elif a.status == 'SCHEDULED' %}p-violet{% else %}p-amber{% endif %}">{{ a.status }}</span><span class="go">→</span></a>
+{% else %}<p class="muted">No appointments.</p>{% endfor %}</div>
+<div class="dsec"><h4>{{ I.icon('lab') }} Lab requests ({{ labs|length }})</h4>
+{% for l in labs %}<a class="drow" href="#" onclick="openDetail('/admin/partials/labs/{{ l.id }}');return false;"><span class="grow"><b>{{ l.test_type }}</b><small>Lab #{{ l.id }} · {{ l.created_at.strftime('%Y-%m-%d') if l.created_at else '—' }}</small></span><span class="pill {% if l.status == 'RESULT_UPLOADED' %}p-green{% else %}p-amber{% endif %}">{{ l.status.replace('_', ' ') }}</span><span class="go">→</span></a>
+{% else %}<p class="muted">No lab requests.</p>{% endfor %}</div>
+<div class="dsec"><h4>{{ I.icon('pill') }} Prescriptions ({{ rxs|length }})</h4>
+{% for x in rxs %}<a class="drow" href="#" onclick="openDetail('/admin/partials/prescriptions/{{ x.id }}');return false;"><span class="grow"><b>{{ x.medication_name }}</b><small>Rx #{{ x.id }} · {{ x.dosage }}</small></span><span class="go">→</span></a>
+{% else %}<p class="muted">No prescriptions.</p>{% endfor %}</div>

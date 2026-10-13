@@ -1,0 +1,21 @@
+{% import "admin/_icons.html" as I %}
+{% set d_title %}Prescription #{{ p.id }}{% endset %}
+{% set d_sub %}{{ p.medication_name }}{% endset %}
+{% set d_pill %}{% if delivery %}{% if delivery.status == 'DELIVERED' %}<span class="pill p-green">DELIVERED</span>{% elif delivery.status == 'FAILED' %}<span class="pill p-red">DELIVERY FAILED</span>{% else %}<span class="pill p-blue">IN DELIVERY: {{ delivery.status.replace('_', ' ') }}</span>{% endif %}{% else %}<span class="pill p-grey">NO DELIVERY REQUESTED</span>{% endif %}{% endset %}
+{% include "admin/_detail_head.html" %}
+<div class="dsec"><h4>{{ I.icon('pill') }} Medication</h4>
+<dl class="kv">
+<dt>Medication</dt><dd><b>{{ p.medication_name }}</b></dd>
+<dt>Dosage</dt><dd>{{ p.dosage }}</dd>
+<dt>Frequency</dt><dd>{{ p.frequency or '—' }}</dd>
+<dt>Duration</dt><dd>{{ p.duration or '—' }}</dd>
+<dt>Instructions</dt><dd>{{ p.instructions or '—' }}</dd>
+<dt>Prescribed by</dt><dd>{{ doc.full_name ~ ' (' ~ doc.user_id ~ ')' if doc else '—' }}</dd>
+<dt>Created</dt><dd>{{ p.created_at.strftime('%Y-%m-%d %H:%M') if p.created_at else '—' }}</dd>
+</dl></div>
+<div class="dsec"><h4>{{ I.icon('patient') }} Patient &amp; visit</h4>
+{% if patient %}<a class="drow" href="#" onclick="openDetail('/admin/partials/patients/{{ patient.id }}');return false;"><span class="grow"><b>{{ patient.full_name }}</b><small>{{ patient.district }}</small></span><span class="go">→</span></a>{% endif %}
+{% if note %}<div class="dnote"><b>Diagnosis:</b> {{ (note.diagnosis or '')[:200] }}{% if appt %} <a href="#" onclick="openDetail('/admin/partials/appointments/{{ appt.id }}');return false;">Appt #{{ appt.id }} →</a>{% endif %}</div>{% endif %}</div>
+<div class="dsec"><h4>{{ I.icon('truck') }} Delivery</h4>
+{% if delivery %}<a class="drow" href="#" onclick="openDetail('/admin/partials/deliveries/{{ delivery.id }}');return false;"><span class="grow"><b>Delivery #{{ delivery.id }}</b><small>{{ rider.full_name if rider else 'Unassigned' }} · {{ (delivery.delivery_address or '')[:80] }}</small></span><span class="go">→</span></a>
+{% else %}<p class="muted">No delivery requested for this prescription yet.</p>{% endif %}</div>

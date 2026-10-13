@@ -1,0 +1,145 @@
+{% extends "admin/base.html" %}
+{% import "admin/_icons.html" as I %}
+{% block title %}NHLS Admin — Console{% endblock %}
+{% block body %}
+<div class="layout">
+  <aside class="sidebar" id="sidebar">
+    <div class="brand">
+      <img src="{{ static_ver('logo.png') }}" alt="NHLS logo">
+      <div><h3>Northern Health Link</h3><small>ADMIN CONSOLE</small></div>
+    </div>
+    <nav class="nav">
+      <div class="sec">OVERVIEW</div>
+      <a href="/admin/" class="{{ 'active' if active == 'dashboard' else '' }}">{{ I.icon('grid') }} Dashboard</a>
+      <a href="/admin/notifications" class="{{ 'active' if active == 'notifications' else '' }}">{{ I.icon('bell') }} Notifications <span class="badge" id="nav-unread" style="display:none"></span></a>
+      <div class="sec">OPERATIONS</div>
+      <a href="/admin/patients" class="{{ 'active' if active == 'patients' else '' }}">{{ I.icon('patient') }} Patients</a>
+      <a href="/admin/appointments" class="{{ 'active' if active == 'appointments' else '' }}">{{ I.icon('appt') }} Appointments</a>
+      <a href="/admin/consultations" class="{{ 'active' if active == 'consultations' else '' }}">{{ I.icon('appt') }} Consultations</a>
+      <a href="/admin/labs" class="{{ 'active' if active == 'labs' else '' }}">{{ I.icon('lab') }} Labs</a>
+      <a href="/admin/prescriptions" class="{{ 'active' if active == 'prescriptions' else '' }}">{{ I.icon('pill') }} Prescriptions</a>
+      <a href="/admin/deliveries" class="{{ 'active' if active == 'deliveries' else '' }}">{{ I.icon('truck') }} Deliveries</a>
+      <div class="sec">ADMINISTRATION</div>
+      <a href="/admin/users" class="{{ 'active' if active == 'users' else '' }}">{{ I.icon('users') }} Users</a>
+      <a href="/admin/clinics" class="{{ 'active' if active == 'clinics' else '' }}">{{ I.icon('clinic') }} Clinics</a>
+      <a href="/admin/audit-logs" class="{{ 'active' if active == 'audit' else '' }}">{{ I.icon('audit') }} Audit Logs</a>
+      <a href="/admin/reports" class="{{ 'active' if active == 'reports' else '' }}">{{ I.icon('grid') }} Reports</a>
+      <a href="/admin/settings" class="{{ 'active' if active == 'settings' else '' }}">{{ I.icon('clinic') }} Settings</a>
+      <a href="/admin/account" class="{{ 'active' if active == 'account' else '' }}">{{ I.icon('user') }} Account</a>
+      <a href="#" onclick="nhlsAdmin.logout();return false;">{{ I.icon('logout') }} Logout</a>
+    </nav>
+    <div class="side-foot">Rural clinics ↔ Tamale specialists<br>Motorcycle delivery fleet</div>
+  </aside>
+
+  <div class="main">
+    <div class="topbar">
+      <button class="icon-btn menu-btn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰</button>
+      <div><h1>{% block heading %}{% endblock %}</h1><div class="sub">{% block sub %}{% endblock %}</div></div>
+      <div class="spacer"></div>
+      <button class="icon-btn" id="bell-btn" title="Notifications" onclick="window.location='/admin/notifications'">{{ I.icon('bell') }}<span class="dot" id="bell-dot" style="display:none">0</span></button>
+      <a class="user-chip" href="/admin/account" style="text-decoration:none;color:inherit" title="Account settings"><span class="avatar" id="avatar">A</span><span id="admin-who" class="hide-sm">Admin</span></a>
+    </div>
+    <div class="content">
+      {% if maintenance_on %}<div class="maint-banner" role="alert">{{ I.icon('lab') }} <b>Maintenance mode ON</b> — {{ maintenance_msg }} <a href="/admin/settings">Manage</a></div>{% endif %}
+      {% block content %}{% endblock %}</div>
+  </div>
+</div>
+<div id="drawer" class="overlay right" role="dialog" aria-modal="true" aria-label="Record details" onclick="if(event.target===this)closeDetail()"><div class="drawer"><div class="pad" id="drawer-body" aria-live="polite"><p><span class="spinner"></span> Loading…</p></div></div></div>
+<div class="toasts" id="toasts" aria-live="polite"></div>
+<script src="{{ static_ver('socket.io.min.js') }}"></script>
+<script>
+var AV_COLORS = ['#2D3E18','#6D4C00','#1D5C6B','#6B2D5C','#3E5C1D','#8A3B12','#274690','#5A5A5A'];
+function avColor(name){ var h = 0, s = String(name||'?'); for (var i=0;i<s.length;i++){ h = (h*31 + s.charCodeAt(i)) % 997; } return AV_COLORS[h % AV_COLORS.length]; }
+function avInitials(name){ var p = String(name||'?').trim().split(/\s+/); return ((p[0]||'?')[0] + (p.length>1 ? (p[1][0]||'') : '')).toUpperCase(); }
+function derr(msg){ return '<div class="derr"><b>Could not load details</b><br>' + msg + '<br><button class="btn ghost sm" style="margin-top:10px" onclick="closeDetail()">Close panel</button></div>'; }
+async function openDetail(url){
+  var d = document.getElementById('drawer'), b = document.getElementById('drawer-body');
+  window._detailUrl = url;
+  d.classList.add('open');
+  b.innerHTML = '<div class="skel" style="height:26px;width:55%"></div><div class="skel" style="height:64px"></div><div class="skel"></div><div class="skel"></div><div class="skel" style="width:70%"></div>';
+  try {
+    var r = await fetch(url, { headers: { 'Authorization': 'Bearer ' + localStorage.getItem('nhls_admin_token') } });
+    if (r.status === 401) return window.nhlsAdmin.logout();
+    if (r.status === 403) { b.innerHTML = derr('Your session does not have permission to view this record.'); return; }
+    if (r.status === 404) { b.innerHTML = derr('This record no longer exists. It may have been deleted.'); return; }
+    if (!r.ok) { b.innerHTML = derr('Server error (HTTP ' + r.status + '). Try again in a moment.'); return; }
+    b.innerHTML = await r.text();
+    if (window.nhlsAdmin && window.nhlsAdmin.signUploads) window.nhlsAdmin.signUploads(b);
+    if (window.htmx) htmx.process(b);
+    var btn = b.querySelector('button'); if (btn) btn.focus();
+  } catch (e) { b.innerHTML = derr('Network error. Check your connection and try again.'); }
+}
+function closeDetail(){ document.getElementById('drawer').classList.remove('open'); }
+document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeDetail(); });
+</script>
+<script>
+(function () {
+  var tok = localStorage.getItem('nhls_admin_token');
+  var u = window.nhlsAdmin && window.nhlsAdmin.user();
+  if (!tok) { window.location = '/admin/login'; return; }
+  if (u) {
+    var av = document.getElementById('avatar');
+    document.getElementById('admin-who').textContent = u.full_name + ' (' + u.user_id + ')';
+    av.textContent = avInitials(u.full_name);
+    av.style.background = avColor(u.full_name);
+  }
+  async function refreshBadge() {
+    try {
+      var r = await fetch('/admin/partials/notifications/mine-count', { headers: { 'Authorization': 'Bearer ' + tok } });
+      if (!r.ok) return;
+      var d = await r.json();
+      var dot = document.getElementById('bell-dot'), nav = document.getElementById('nav-unread');
+      if (d.unread > 0) {
+        dot.style.display = 'grid'; dot.textContent = d.unread > 99 ? '99+' : d.unread;
+        nav.style.display = ''; nav.textContent = d.unread > 99 ? '99+' : d.unread;
+      } else { dot.style.display = 'none'; nav.style.display = 'none'; }
+    } catch (e) {}
+  }
+  refreshBadge(); setInterval(refreshBadge, 30000);
+  connectLive(tok, refreshBadge);
+})();
+function pushToast(title, msg) {
+  var box = document.getElementById('toasts');
+  if (!box) return;
+  var t = document.createElement('div');
+  t.className = 'toast';
+  t.onclick = function () { window.location = '/admin/notifications'; };
+  var b = document.createElement('b'); b.textContent = title || 'New notification';
+  var s = document.createElement('small'); s.textContent = (msg || '').slice(0, 140);
+  var live = document.createElement('span'); live.className = 'live'; live.textContent = '● LIVE — click to view';
+  t.appendChild(live); t.appendChild(b); t.appendChild(s);
+  box.appendChild(t);
+  while (box.children.length > 3) box.removeChild(box.firstChild);
+  setTimeout(function () { if (t.parentNode) t.parentNode.removeChild(t); }, 8000);
+}
+function connectLive(tok, refreshBadge) {
+  if (!tok || typeof io === 'undefined') return; // offline vendor or logged out: polling continues
+  try {
+    var s = io({ auth: { token: tok }, reconnection: true, reconnectionDelayMax: 10000 });
+    // Auth refusals (expired/invalid token) are permanent: stop the retry
+    // loop and send the user back to login for a fresh token instead of
+    // hammering /socket.io/ with 400s. Transient network errors keep retrying.
+    s.on('connect_error', function (err) {
+      var m = String((err && err.message) || '');
+      if (/expir|invalid|auth|refus|requir|missing/i.test(m)) {
+        try { s.io.reconnect(false); s.disconnect(); } catch (e) {}
+        window.nhlsAdmin.logout();
+      }
+    });
+    s.on('notification', function (n) {
+      n = n || {};
+      pushToast(n.title, n.message);
+      try { refreshBadge(); } catch (e) {}
+      try {
+        if (document.getElementById('minebox')) htmx.ajax('GET', '/admin/partials/notifications/mine', '#minebox');
+      } catch (e) {}
+    });
+    s.on('delivery_status_update', function (d) {
+      d = d || {};
+      pushToast('Delivery ' + String(d.status || '').replace(/_/g, ' '), 'Delivery #' + d.delivery_id + ' updated.');
+      try { refreshBadge(); } catch (e) {}
+    });
+  } catch (e) { /* polling fallback stays active */ }
+}
+</script>
+{% endblock %}

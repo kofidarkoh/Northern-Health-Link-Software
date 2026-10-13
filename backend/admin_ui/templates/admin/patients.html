@@ -1,0 +1,12 @@
+{% extends "admin/shell.html" %}
+{% import "admin/_icons.html" as I %}
+{% block heading %}Patients{% endblock %}
+{% block sub %}Records registered by rural clinics — click a row for full details{% endblock %}
+{% block content %}
+<div class="card"><div class="pad"><div class="filters" style="grid-template-columns:1.4fr 1fr 1fr">
+<div><label class="f">Search</label><div class="field">{{ I.icon('search') }}<input id="pq" name="q" class="input" placeholder="Name, district, phone…" hx-get="/admin/partials/patients" hx-trigger="keyup changed delay:400ms" hx-target="#ptable" hx-include="#pclinic,#pgender"></div></div>
+<div><label class="f">Clinic</label><div class="field">{{ I.icon('clinic') }}<select id="pclinic" name="clinic_id" class="select" hx-get="/admin/partials/patients" hx-trigger="change" hx-target="#ptable" hx-include="#pq,#pgender"><option value="">All clinics</option>{% for c in clinics %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div></div>
+<div><label class="f">Gender</label><div class="field">{{ I.icon('user') }}<select id="pgender" name="gender" class="select" hx-get="/admin/partials/patients" hx-trigger="change" hx-target="#ptable" hx-include="#pq,#pclinic"><option value="">All</option><option>Male</option><option>Female</option><option>Other</option></select></div></div>
+</div></div></div>
+<div id="ptable" hx-get="/admin/partials/patients" hx-trigger="load" hx-swap="innerHTML" style="margin-top:14px"><p><span class="spinner"></span> Loading…</p></div>
+{% endblock %}

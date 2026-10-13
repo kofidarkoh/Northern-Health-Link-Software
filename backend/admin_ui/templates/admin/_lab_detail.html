@@ -1,0 +1,29 @@
+{% import "admin/_icons.html" as I %}
+{% set d_title %}Lab request #{{ r.id }}{% endset %}
+{% set d_sub %}{{ r.test_type }}{% endset %}
+{% set d_pill %}{% if r.status == 'RESULT_UPLOADED' %}<span class="pill p-green">RESULT UPLOADED</span>{% else %}<span class="pill p-amber">REQUESTED</span>{% endif %}{% endset %}
+{% include "admin/_detail_head.html" %}
+<div class="steps"><div class="step done"><div class="sdot">✓</div>Requested</div><div class="step {% if res %}done{% else %}now{% endif %}"><div class="sdot">{% if res %}✓{% else %}2{% endif %}</div>Result uploaded</div></div>
+<div class="dsec"><h4>{{ I.icon('lab') }} Request</h4>
+<dl class="kv">
+<dt>Patient</dt><dd>{% if patient %}<a href="#" onclick="openDetail('/admin/partials/patients/{{ patient.id }}');return false;"><b>{{ patient.full_name }}</b></a>{% else %}—{% endif %}</dd>
+<dt>Requested by</dt><dd>{{ req.full_name ~ ' (' ~ req.user_id ~ ')' if req else '—' }}</dd>
+<dt>Reason</dt><dd>{{ r.clinical_reason or '—' }}</dd>
+<dt>Requested</dt><dd>{{ r.created_at.strftime('%Y-%m-%d %H:%M') if r.created_at else '—' }}</dd>
+</dl></div>
+<div class="dsec"><h4>{{ I.icon('doc') }} Result</h4>
+{% if res %}<dl class="kv">
+<dt>Summary</dt><dd>{{ res.result_summary }}</dd>
+<dt>Uploaded by</dt><dd>{{ uploader.full_name if uploader else '—' }}</dd>
+<dt>Uploaded</dt><dd>{{ res.created_at.strftime('%Y-%m-%d %H:%M') if res.created_at else '—' }}</dd>
+</dl>
+{% set _ext = (res.file_url or '')|lower %}
+{% if res.file_url %}
+{% if _ext.endswith(('.jpg', '.jpeg', '.png', '.webp')) %}
+<a href="/{{ res.file_url }}" target="_blank" rel="noopener" title="Open full size"><img class="dpreview" src="/{{ res.file_url }}" alt="Lab result image" loading="lazy"></a>
+{% elif _ext.endswith('.pdf') %}
+<embed class="dpreview-doc" src="/{{ res.file_url }}" type="application/pdf">
+{% endif %}
+<p style="margin:8px 0 0"><a href="/{{ res.file_url }}" target="_blank" rel="noopener">Open full file →</a>{% if _ext.endswith(('.doc', '.docx')) %} <small class="muted">(downloads to your device)</small>{% endif %}</p>
+{% else %}<p class="muted">No file attached — summary only.</p>{% endif %}
+{% else %}<div class="dnote">Awaiting lab officer upload. This request is still in the pending queue.</div>{% endif %}</div>

@@ -1,0 +1,8 @@
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Name</th><th>District</th><th class="hide-sm">Address</th><th>Ownership</th><th class="hide-sm">Contact</th><th>Users</th><th>Patients</th><th>Actions</th></tr>
+{% for c in clinics %}
+<tr><td><b>{{ c.name }}</b></td><td>{{ c.district }}</td><td class="hide-sm">{{ c.address or '—' }}</td><td><span class="pill {% if c.ownership == 'PRIVATE' %}p-violet{% elif c.ownership == 'FAITH_BASED' %}p-blue{% elif c.ownership == 'NGO' %}p-amber{% else %}p-green{% endif %}">{{ (c.ownership or 'PUBLIC').replace('_',' ') }}</span></td><td class="hide-sm">{{ c.contact_phone or '—' }}</td><td>{{ counts[c.id]['users'] }}</td><td>{{ counts[c.id]['patients'] }}</td>
+<td style="white-space:nowrap"><button class="btn ghost sm" onclick='openEditClinic({{ c.id }}, {{ c.name|tojson }}, {{ c.district|tojson }}, {{ (c.contact_phone or "")|tojson }}, {{ (c.ownership or "PUBLIC")|tojson }}, {{ (c.address or "")|tojson }})'>Edit</button>
+<button class="btn danger sm" onclick='deleteClinic({{ c.id }}, {{ c.name|tojson }})'>Delete</button></td></tr>
+{% else %}<tr><td colspan="8"><div class="empty">No clinics found.</div></td></tr>{% endfor %}
+</table></div>

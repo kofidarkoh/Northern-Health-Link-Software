@@ -1,0 +1,22 @@
+{% if compact %}<div class="feed">
+{% for r in requests %}
+<div class="feed-item"><span class="unread-dot"></span>
+<div style="flex:1"><b>{{ r.test_type }}</b> — {{ patients.get(r.patient_id, '—') }}<br>
+<small class="muted">{{ users.get(r.requested_by_id, '') }} · {{ r.created_at.strftime('%m-%d %H:%M') if r.created_at else '' }}</small></div>
+<span class="pill p-amber">REQUESTED</span></div>
+{% else %}<div class="empty">Queue clear 🎉</div>{% endfor %}
+</div>{% else %}<p class="muted">{{ total }} lab requests — page {{ page }} / {{ total_pages }}</p>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Test</th><th>Patient</th><th class="hide-sm">Requested by</th><th>Status</th><th class="hide-sm">Result</th></tr>
+{% for r in requests %}
+<tr><td class="rowlink" onclick="openDetail('/admin/partials/labs/{{ r.id }}')"><b class="t">{{ r.test_type }}</b><br><small class="muted">{{ (r.clinical_reason or '')[:80] }}</small></td>
+<td>{{ patients.get(r.patient_id, '—') }}</td><td class="hide-sm">{{ users.get(r.requested_by_id, '—') }}</td>
+<td>{% if r.status == 'RESULT_UPLOADED' %}<span class="pill p-green">RESULT UPLOADED</span>{% else %}<span class="pill p-amber">REQUESTED</span>{% endif %}</td>
+<td class="hide-sm">{{ results.get(r.id, '—') }}</td></tr>
+{% else %}<tr><td colspan="5"><div class="empty">No lab requests found.</div></td></tr>{% endfor %}
+</table></div>
+{% if total_pages > 1 %}<div class="pager">
+{% if page > 1 %}<button class="btn ghost sm" hx-get="/admin/partials/labs?page={{ page-1 }}&status={{ status }}&clinic_id={{ clinic_id }}&q={{ q }}" hx-target="#ltable">← Prev</button>{% endif %}
+<span>Page {{ page }} / {{ total_pages }}</span>
+{% if page < total_pages %}<button class="btn ghost sm" hx-get="/admin/partials/labs?page={{ page+1 }}&status={{ status }}&clinic_id={{ clinic_id }}&q={{ q }}" hx-target="#ltable">Next →</button>{% endif %}
+</div>{% endif %}{% endif %}

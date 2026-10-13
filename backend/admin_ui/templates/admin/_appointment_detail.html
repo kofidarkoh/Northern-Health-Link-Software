@@ -1,0 +1,37 @@
+{% import "admin/_icons.html" as I %}
+{% set d_title %}Appointment #{{ a.id }}{% endset %}
+{% set d_sub %}{{ a.appointment_time.strftime('%Y-%m-%d %H:%M') if a.appointment_time else 'No time set' }}{% endset %}
+{% set d_pill %}{% if a.status == 'COMPLETED' %}<span class="pill p-green">COMPLETED</span>{% elif a.status == 'CANCELLED' %}<span class="pill p-red">CANCELLED</span>{% elif a.status == 'IN_PROGRESS' %}<span class="pill p-blue">IN PROGRESS</span>{% elif a.status == 'SCHEDULED' %}<span class="pill p-violet">SCHEDULED</span>{% else %}<span class="pill p-amber">REQUESTED</span>{% endif %}{% if a.video_room_url %} <a href="{{ a.video_room_url }}" target="_blank" rel="noopener">Join video →</a>{% endif %}{% endset %}
+{% include "admin/_detail_head.html" %}
+{% if a.status == 'CANCELLED' %}
+<div class="steps"><div class="step done"><div class="sdot">✓</div>Requested</div><div class="step bad"><div class="sdot">✕</div>Cancelled</div></div>
+{% else %}
+{% set flow = ['REQUESTED', 'SCHEDULED', 'IN_PROGRESS', 'COMPLETED'] %}
+{% set idx = flow.index(a.status) if a.status in flow else 0 %}
+<div class="steps">{% for s in flow %}<div class="step {% if loop.index0 < idx %}done{% elif loop.index0 == idx %}now{% endif %}"><div class="sdot">{% if loop.index0 < idx %}✓{% else %}{{ loop.index }}{% endif %}</div>{{ s.replace('_', ' ') }}</div>{% endfor %}</div>
+{% endif %}
+<div class="dsec"><h4>{{ I.icon('appt') }} Visit</h4>
+<dl class="kv">
+<dt>Patient</dt><dd>{% if patient %}<a href="#" onclick="openDetail('/admin/partials/patients/{{ patient.id }}');return false;"><b>{{ patient.full_name }}</b></a> · {{ patient.district }}{% else %}—{% endif %}</dd>
+<dt>Clinic</dt><dd>{{ clinic.name if clinic else '—' }}</dd>
+<dt>Specialist</dt><dd>{{ spec.full_name ~ ' (' ~ spec.user_id ~ ')' if spec else '—' }}</dd>
+<dt>Created</dt><dd>{{ a.created_at.strftime('%Y-%m-%d %H:%M') if a.created_at else '—' }}</dd>
+</dl></div>
+<div class="dsec"><h4>{{ I.icon('doc') }} Consultation note</h4>
+{% if note %}<dl class="kv">
+<dt>Diagnosis</dt><dd>{{ note.diagnosis }}</dd>
+<dt>Recommendations</dt><dd>{{ note.recommendations or '—' }}</dd>
+<dt>Referral</dt><dd>{{ note.referral_notes or '—' }}</dd>
+<dt>Treatment</dt><dd>{{ note.treatment_instructions or '—' }}</dd>
+</dl>
+{% for x in rxs %}<a class="drow" href="#" onclick="openDetail('/admin/partials/prescriptions/{{ x.id }}');return false;"><span class="grow"><b>{{ x.medication_name }}</b><small>Rx #{{ x.id }} · {{ x.dosage }}</small></span><span class="go">→</span></a>{% endfor %}
+{% else %}<p class="muted">No consultation note yet.</p>{% endif %}</div>
+<div class="dsec"><h4>{{ I.icon('tag') }} Admin: override status</h4>
+<form hx-post="/admin/actions/appointments/{{ a.id }}/status" hx-target="#da-result" hx-swap="innerHTML" hx-on::response-error="document.getElementById('da-result').innerHTML=event.detail.xhr.responseText" hx-on::after-request="if(event.detail.successful)openDetail(window._detailUrl)">
+<div class="grid" style="grid-template-columns:1fr 1fr">
+<div><label class="f">Status</label><div class="field">{{ I.icon('tag') }}<select class="select" name="status">{% for s in ['REQUESTED','SCHEDULED','IN_PROGRESS','COMPLETED','CANCELLED'] %}<option value="{{ s }}" {% if s == a.status %}selected{% endif %}>{{ s.replace('_',' ') }}</option>{% endfor %}</select></div></div>
+<div><label class="f">Video URL (optional)</label><div class="field">{{ I.icon('home') }}<input class="input" name="video_room_url" value="{{ a.video_room_url or '' }}" placeholder="https://…"></div></div>
+</div>
+<div id="da-result" style="margin-top:8px"></div>
+<p style="margin:8px 0 0"><button class="btn sm" type="submit">Apply status</button></p>
+</form></div>

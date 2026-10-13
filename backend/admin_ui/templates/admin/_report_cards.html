@@ -1,0 +1,55 @@
+{% import "admin/_icons.html" as I %}
+<p class="muted">Window: last {{ days }} days (since {{ since.strftime('%Y-%m-%d') }}) · lab queue total is all-time, the rest is windowed.</p>
+{% set appt_total = appt_by_status.values()|sum if appt_by_status else 0 %}
+{% set del_total = del_by_status.values()|sum if del_by_status else 0 %}
+<div class="grid stats">
+<div class="card stat"><div class="tile">{{ I.icon('appt') }}</div><div><div class="num">{{ appt_total }}</div><div class="lbl">Appointments · {{ days }}d</div></div></div>
+<div class="card stat amber"><div class="tile">{{ I.icon('truck') }}</div><div><div class="num">{{ del_total }}</div><div class="lbl">Deliveries · {{ days }}d</div></div></div>
+<div class="card stat green"><div class="tile">{{ I.icon('lab') }}</div><div><div class="num">{{ labs_requested + labs_done }}</div><div class="lbl">Lab queue (all-time)</div></div></div>
+<div class="card stat blue"><div class="tile">{{ I.icon('doc') }}</div><div><div class="num">{{ consults }} / {{ rx_count }}</div><div class="lbl">Consults / Rx · {{ days }}d</div></div></div>
+</div>
+<div class="grid two" style="margin-top:14px">
+<div class="card"><div class="pad">
+<h3 style="margin-top:0">Appointments by status</h3>
+{% if appt_by_status %}<div class="bars">
+{% for s,n in appt_by_status.items()|sort(attribute='1',reverse=true) %}
+<div class="brow"><span class="bname">{{ s.replace('_',' ') }}</span><span class="track"><span class="fill {% if s in ['COMPLETED'] %}green{% elif s in ['CANCELLED'] %}red{% elif s in ['REQUESTED'] %}amber{% elif s in ['IN_PROGRESS'] %}blue{% else %}violet{% endif %}" style="display:block;width:{{ (n/appt_total*100)|round(1) if appt_total else 0 }}%"></span></span><span class="n">{{ n }}</span></div>
+{% endfor %}
+</div>{% else %}<div class="empty">No appointments in window.</div>{% endif %}
+</div></div>
+<div class="card"><div class="pad">
+<h3 style="margin-top:0">Deliveries by status</h3>
+{% if del_by_status %}<div class="bars">
+{% for s,n in del_by_status.items()|sort(attribute='1',reverse=true) %}
+<div class="brow"><span class="bname">{{ s.replace('_',' ') }}</span><span class="track"><span class="fill {% if s == 'DELIVERED' %}green{% elif s == 'FAILED' %}red{% elif s == 'PENDING' %}amber{% elif s == 'IN_TRANSIT' %}blue{% else %}violet{% endif %}" style="display:block;width:{{ (n/del_total*100)|round(1) if del_total else 0 }}%"></span></span><span class="n">{{ n }}</span></div>
+{% endfor %}
+</div>{% else %}<div class="empty">No deliveries in window.</div>{% endif %}
+</div></div>
+</div>
+<div class="grid two" style="margin-top:14px">
+<div class="card"><div class="pad">
+<h3 style="margin-top:0">Lab pipeline</h3>
+<div class="bars">
+<div class="brow"><span class="bname">Requested ({{ days }}d)</span><span class="track"><span class="fill amber" style="display:block;width:{{ (labs_requested_w/(labs_requested_w+labs_done_w)*100)|round(1) if (labs_requested_w+labs_done_w) else 0 }}%"></span></span><span class="n">{{ labs_requested_w }}</span></div>
+<div class="brow"><span class="bname">Result up ({{ days }}d)</span><span class="track"><span class="fill green" style="display:block;width:{{ (labs_done_w/(labs_requested_w+labs_done_w)*100)|round(1) if (labs_requested_w+labs_done_w) else 0 }}%"></span></span><span class="n">{{ labs_done_w }}</span></div>
+<div class="brow"><span class="bname">Queue backlog</span><span class="track"><span class="fill red" style="display:block;width:100%"></span></span><span class="n">{{ labs_requested }}</span></div>
+</div>
+<p class="muted" style="margin-bottom:0">{{ labs_done }} results filed all-time · backlog needs lab-officer action.</p>
+</div></div>
+<div class="card"><div class="pad">
+<h3 style="margin-top:0">Intake & alerts</h3>
+<div class="bars">
+<div class="brow"><span class="bname">New patients</span><span class="track"><span class="fill blue" style="display:block;width:100%"></span></span><span class="n">{{ patients_new }}</span></div>
+<div class="brow"><span class="bname">Notifications</span><span class="track"><span class="fill violet" style="display:block;width:100%"></span></span><span class="n">{{ notifs_sent }}</span></div>
+</div>
+<p class="muted" style="margin-bottom:0">Registrations and system notifications created in the last {{ days }} days.</p>
+</div></div>
+</div>
+<div class="card" style="margin-top:14px"><div class="pad">
+<h3 style="margin-top:0">Patients by district (top 10, all-time)</h3>
+{% if top_districts %}<div class="bars" style="max-width:640px">
+{% for r in top_districts %}
+<div class="brow"><span class="bname">{{ r.district or '—' }}</span><span class="track"><span class="fill" style="display:block;width:{{ (r.n/district_total*100)|round(1) if district_total else 0 }}%"></span></span><span class="n">{{ r.n }}</span></div>
+{% endfor %}
+</div>{% else %}<div class="empty">No patients yet.</div>{% endif %}
+</div></div>

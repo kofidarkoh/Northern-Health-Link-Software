@@ -1,0 +1,9 @@
+{# Avatar: photo when available, deterministic initials circle otherwise #}
+{% macro avatar(name, seed=0, size=34, pic=None) -%}
+{% if pic %}<img src="/{{ pic }}" alt="{{ name }}" class="avatar" style="width:{{ size }}px;height:{{ size }}px;object-fit:cover;" title="{{ name }}">
+{% else %}
+{% set parts = (name or '?').strip().split(' ') %}
+{% set init = (parts[0][0] if parts|length > 0 else '?') + (parts[1][0] if parts|length > 1 else '') %}
+<span class="avatar av{{ (seed|int) % 8 }}" style="width:{{ size }}px;height:{{ size }}px;font-size:{{ (size * 0.38)|round|int }}px" title="{{ name }}">{{ init|upper }}</span>
+{% endif %}
+{%- endmacro %}

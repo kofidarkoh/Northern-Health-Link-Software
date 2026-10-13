@@ -1,0 +1,64 @@
+{% extends "admin/shell.html" %}
+{% import "admin/_icons.html" as I %}
+{% block heading %}Clinics{% endblock %}
+{% block sub %}Rural clinics & health centres{% endblock %}
+{% block content %}
+<div class="card"><div class="pad toolbar">
+  <button class="btn" onclick="document.getElementById('clinic-modal').classList.add('open')">+ Add Clinic</button>
+  <div class="field" style="min-width:220px">{{ I.icon('tag') }}<select id="cownership" class="select" hx-get="/admin/partials/clinics" hx-trigger="change" hx-target="#clinic-table"><option value="">All ownership</option>{% for o in ownerships %}<option value="{{ o }}">{{ o.replace('_',' ').title() }}</option>{% endfor %}</select></div>
+  <span class="muted">Counts include active users & patients per clinic.</span>
+</div></div>
+<div id="clinic-table" hx-get="/admin/partials/clinics" hx-trigger="load" hx-swap="innerHTML" style="margin-top:14px"><p><span class="spinner"></span> Loading…</p></div>
+<div id="clinic-modal" class="overlay"><div class="modal"><div class="pad">
+  <h3>New clinic</h3>
+  <form hx-post="/admin/actions/clinics" hx-target="#clinic-result" hx-swap="innerHTML" hx-on::after-request="if(event.detail.successful){this.reset();htmx.ajax('GET','/admin/partials/clinics'+(document.getElementById('cownership').value?'?ownership='+document.getElementById('cownership').value:''),'#clinic-table')}">
+    <label class="f">Name</label><div class="field">{{ I.icon('clinic') }}<input class="input" name="name" required></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+      <div><label class="f">District (Northern Region)</label><div class="field">{{ I.icon('home') }}<select class="select" name="district" required><option value="">Select district…</option>{% for d in districts %}<option value="{{ d.name }}">{{ d.name }}</option>{% endfor %}</select></div></div>
+      <div><label class="f">Ownership</label><div class="field">{{ I.icon('tag') }}<select class="select" name="ownership" required>{% for o in ownerships %}<option value="{{ o }}">{{ o.replace('_',' ').title() }}</option>{% endfor %}</select></div></div>
+    </div>
+    <div style="margin-top:10px"><label class="f">Contact phone</label><div class="field">{{ I.icon('phone') }}<input class="input" name="contact_phone"></div></div>
+    <div style="margin-top:10px"><label class="f">Address (optional)</label><div class="field">{{ I.icon('home') }}<input class="input" name="address" maxlength="255" placeholder="e.g. Plot 12, Hospital Road, Savelugu"></div></div>
+    <div id="clinic-result" style="margin-top:10px"></div>
+    <p class="toolbar"><button class="btn" type="submit">Create</button><button class="btn ghost" type="button" onclick="document.getElementById('clinic-modal').classList.remove('open')">Close</button></p>
+  </form>
+</div></div></div>
+<div id="clinic-edit-modal" class="overlay"><div class="modal"><div class="pad">
+  <h3>Edit clinic</h3>
+  <form id="clinic-edit-form" hx-post="/admin/actions/clinics/0/edit" hx-target="#clinic-edit-result" hx-swap="innerHTML" hx-on::after-request="if(event.detail.successful)htmx.ajax('GET','/admin/partials/clinics'+(document.getElementById('cownership').value?'?ownership='+document.getElementById('cownership').value:''),'#clinic-table')">
+    <label class="f">Name</label><div class="field">{{ I.icon('clinic') }}<input class="input" name="name" id="ec-name" required></div>
+    <div class="grid" style="grid-template-columns:1fr 1fr;margin-top:10px">
+      <div><label class="f">District (Northern Region)</label><div class="field">{{ I.icon('home') }}<select class="select" name="district" id="ec-district" required>{% for d in districts %}<option value="{{ d.name }}">{{ d.name }}</option>{% endfor %}</select></div></div>
+      <div><label class="f">Ownership</label><div class="field">{{ I.icon('tag') }}<select class="select" name="ownership" id="ec-ownership" required>{% for o in ownerships %}<option value="{{ o }}">{{ o.replace('_',' ').title() }}</option>{% endfor %}</select></div></div>
+    </div>
+    <div style="margin-top:10px"><label class="f">Contact phone</label><div class="field">{{ I.icon('phone') }}<input class="input" name="contact_phone" id="ec-phone"></div></div>
+    <div style="margin-top:10px"><label class="f">Address (optional)</label><div class="field">{{ I.icon('home') }}<input class="input" name="address" id="ec-address" maxlength="255" placeholder="e.g. Plot 12, Hospital Road, Savelugu"></div></div>
+    <div id="clinic-edit-result" style="margin-top:10px"></div>
+    <p class="toolbar"><button class="btn" type="submit">Save</button><button class="btn ghost" type="button" onclick="document.getElementById('clinic-edit-modal').classList.remove('open')">Close</button></p>
+  </form>
+</div></div></div>
+<script>
+var NR_DISTRICTS = [{% for d in districts %}{{ d.name|tojson }}{% if not loop.last %},{% endif %}{% endfor %}];
+function openEditClinic(id, name, district, phone, ownership, address){
+  var f = document.getElementById('clinic-edit-form');
+  f.setAttribute('hx-post', '/admin/actions/clinics/'+id+'/edit');
+  if (window.htmx) htmx.process(f);
+  document.getElementById('ec-name').value = name || '';
+  var ds = document.getElementById('ec-district');
+  if (district && NR_DISTRICTS.indexOf(district) === -1) {
+    var opt = document.createElement('option'); opt.value = district; opt.textContent = district + ' (legacy)';
+    ds.appendChild(opt);
+  }
+  ds.value = district || '';
+  document.getElementById('ec-ownership').value = ownership || 'PUBLIC';
+  document.getElementById('ec-phone').value = phone || '';
+  document.getElementById('ec-address').value = address || '';
+  document.getElementById('clinic-result').innerHTML = '';
+  document.getElementById('clinic-edit-result').innerHTML = '';
+  document.getElementById('clinic-edit-modal').classList.add('open'); }
+function deleteClinic(id, name){ if(!confirm('Delete '+name+'? Empty clinics only.')) return;
+  fetch('/admin/actions/clinics/'+id+'/delete', { method:'POST', headers: { 'Authorization': 'Bearer '+localStorage.getItem('nhls_admin_token') } }).then(async r => {
+    var d = await r.json(); if (!r.ok) return alert(d.error||'Delete failed');
+    htmx.ajax('GET','/admin/partials/clinics','#clinic-table'); }); }
+</script>
+{% endblock %}

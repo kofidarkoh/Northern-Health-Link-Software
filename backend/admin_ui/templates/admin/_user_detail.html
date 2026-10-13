@@ -1,0 +1,19 @@
+{% import "admin/_avatar.html" as A %}
+{% import "admin/_icons.html" as I %}
+{% set d_title %}{{ u.full_name }}{% endset %}
+{% set d_sub %}{{ u.user_id }}{% endset %}
+{% set d_pill %}<span class="pill role-{{ u.role }}">{{ u.role.replace('_',' ') }}</span> {% if u.active %}<span class="pill p-green">ACTIVE</span>{% else %}<span class="pill p-grey">INACTIVE</span>{% endif %}{% if u.must_change_password %} <span class="pill p-amber">MUST CHANGE PASSWORD</span>{% endif %}{% endset %}
+{% include "admin/_detail_head.html" %}
+<p class="celluser" style="margin:12px 0">{{ A.avatar(u.full_name, u.id, 46, u.profile_picture) }}<span><b style="font-size:17px">{{ u.full_name }}</b><br><small class="muted">{{ u.email or 'No email' }} · {{ u.phone or 'No phone' }}</small></span></p>
+<div class="dsec"><h4>{{ I.icon('user') }} Profile</h4>
+<dl class="kv">
+<dt>User ID</dt><dd>{{ u.user_id }}</dd>
+<dt>Role</dt><dd>{{ u.role.replace('_',' ').title() }}</dd>
+<dt>Speciality</dt><dd>{{ u.speciality or '—' }}</dd>
+<dt>Clinic</dt><dd>{% if clinic %}<b>{{ clinic.name }}</b> · {{ clinic.district }}{% else %}—{% endif %}</dd>
+<dt>Phone</dt><dd>{{ u.phone or '—' }}</dd>
+<dt>Email</dt><dd>{{ u.email or '—' }}</dd>
+<dt>Security question</dt><dd>{{ u.security_question or '—' }}</dd>
+<dt>Member since</dt><dd>{{ u.created_at.strftime('%Y-%m-%d %H:%M') if u.created_at else '—' }}</dd>
+</dl></div>
+<p class="muted" style="font-size:12.5px">Use <b>Edit</b> in the table to change this user's role, clinic, or status. Password resets are handled with the <b>Reset PW</b> action.</p>

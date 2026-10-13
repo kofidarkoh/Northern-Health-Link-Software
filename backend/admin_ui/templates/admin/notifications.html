@@ -1,0 +1,59 @@
+{% extends "admin/shell.html" %}
+{% import "admin/_icons.html" as I %}
+{% block heading %}Notifications{% endblock %}
+{% block sub %}System alerts + broadcast to staff{% endblock %}
+{% block content %}
+<div class="grid two">
+<div class="card"><div class="pad">
+<h3>Broadcast alert</h3><p class="muted" style="margin-top:0">Send to role, clinic, or everyone. Logged in audit.</p>
+<form hx-post="/admin/actions/notify" hx-target="#notify-result" hx-swap="innerHTML" hx-disabled-elt="button[type=submit]" hx-on::response-error="document.getElementById('notify-result').innerHTML=event.detail.xhr.responseText" hx-on::config-request="if(!this.querySelector('[name=role]').value && !confirm('Send to ALL staff across all clinics?'))event.preventDefault()" hx-on::after-request="if(event.detail.successful){this.reset();refreshNotes();pushToast('Broadcast sent','Your alert is now in the table below.')}">
+<div class="grid" style="grid-template-columns:1fr 1fr">
+<div><label class="f">Audience role</label><select class="select" name="role"><option value="">All roles</option>{% for r in ['ADMIN','CLINIC_STAFF','SPECIALIST','LAB_OFFICER','RIDER'] %}<option value="{{ r }}">{{ r.replace('_',' ') }}</option>{% endfor %}</select></div>
+<div><label class="f">Clinic</label><select class="select" name="clinic_id"><option value="">All clinics</option>{% for c in clinics %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div>
+</div>
+<div style="margin-top:10px"><label class="f">Title</label><div class="field">{{ I.icon('tag') }}<input class="input" name="title" required maxlength="160" placeholder="e.g. Lab queue backlog"></div></div>
+<div style="margin-top:10px"><label class="f">Message</label><textarea class="input" name="message" required rows="3" placeholder="Details for staff…"></textarea></div>
+<div id="notify-result" style="margin-top:10px"></div>
+<p style="margin-bottom:0"><button class="btn" type="submit">Send broadcast</button></p>
+</form>
+</div></div>
+<div class="card"><div class="pad">
+<h3>My inbox</h3><p class="muted" style="margin-top:0">Your admin alerts <button class="btn ghost sm" onclick="markAllRead(this)">Mark all read</button></p>
+<div id="minebox" hx-get="/admin/partials/notifications/mine" hx-trigger="load" hx-swap="innerHTML"><span class="spinner"></span></div>
+</div></div>
+</div>
+<div class="card" style="margin-top:14px"><div class="pad">
+<h3>All system notifications</h3>
+<div class="filters" style="grid-template-columns:1fr 1fr 1fr 1fr">
+<div><label class="f">Search</label><div class="field">{{ I.icon('search') }}<input id="nq" name="q" class="input" placeholder="Title, message, patient…" hx-get="/admin/partials/notifications" hx-trigger="keyup changed delay:400ms" hx-target="#ntable" hx-include="#nread,#nrole,#nevent"></div></div>
+<div><label class="f">Read state</label><div class="field">{{ I.icon('mail') }}<select id="nread" name="unread" class="select" hx-get="/admin/partials/notifications" hx-trigger="change" hx-target="#ntable" hx-include="#nq,#nrole,#nevent"><option value="">All</option><option value="1">Unread only</option><option value="0">Read only</option></select></div></div>
+<div><label class="f">Role</label><div class="field">{{ I.icon('tag') }}<select id="nrole" name="role" class="select" hx-get="/admin/partials/notifications" hx-trigger="change" hx-target="#ntable" hx-include="#nq,#nread,#nevent"><option value="">All roles</option>{% for r in ['ADMIN','CLINIC_STAFF','SPECIALIST','LAB_OFFICER','RIDER'] %}<option value="{{ r }}">{{ r }}</option>{% endfor %}</select></div></div>
+<div><label class="f">Event</label><div class="field">{{ I.icon('cal') }}<select id="nevent" name="event" class="select" hx-get="/admin/partials/notifications" hx-trigger="change" hx-target="#ntable" hx-include="#nq,#nread,#nrole"><option value="">All events</option>{% for e in ['appointment','lab','prescription','delivery','general'] %}<option value="{{ e }}">{{ e }}</option>{% endfor %}</select></div></div>
+</div></div></div>
+<div id="ntable" hx-get="/admin/partials/notifications" hx-trigger="load" hx-swap="innerHTML" style="margin-top:14px"><p><span class="spinner"></span> Loading…</p></div>
+<script>
+var NHLS_AUTH = function(){ return { 'Authorization': 'Bearer ' + localStorage.getItem('nhls_admin_token') }; };
+function refreshNotes(page){
+  var p = new URLSearchParams({
+    q: document.getElementById('nq').value,
+    unread: document.getElementById('nread').value,
+    role: document.getElementById('nrole').value,
+    event: document.getElementById('nevent').value
+  });
+  if (page) p.set('page', page);
+  htmx.ajax('GET', '/admin/partials/notifications?' + p.toString(), '#ntable');
+}
+function markAllRead(btn){
+  btn.disabled = true;
+  fetch('/api/notifications/read-all', { method: 'PATCH', headers: NHLS_AUTH() })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); refreshNotes(); htmx.ajax('GET', '/admin/partials/notifications/mine', '#minebox'); pushToast('Inbox cleared', 'All your alerts are marked read.'); })
+    .catch(function(){ pushToast('Could not mark all read', 'Check your connection and try again.'); })
+    .finally(function(){ btn.disabled = false; });
+}
+function markOneRead(id){
+  fetch('/admin/actions/notifications/' + id + '/read', { method: 'POST', headers: NHLS_AUTH() })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); refreshNotes(); htmx.ajax('GET', '/admin/partials/notifications/mine', '#minebox'); })
+    .catch(function(){ pushToast('Could not mark as read', 'Check your connection and try again.'); });
+}
+</script>
+{% endblock %}

@@ -1,0 +1,15 @@
+{% if by_role %}<p class="muted">Unread by role: {% for r,n in by_role.items() %}<span class="pill p-amber" style="margin-right:4px">{{ r }}: {{ n }}</span>{% endfor %}</p>{% endif %}
+<div class="feed">
+{% for n in notifications %}
+<div class="feed-item"><span class="{{ 'unread-dot' if not n.read_at else 'read-dot' }}"></span>
+<div style="flex:1"><b>{{ n.title }}</b> <span class="pill p-grey">{{ events.get(n.id, 'general') }}</span><br><span class="muted nmsg{% if n.message|length > 160 %} long{% endif %}" onclick="if(this.classList.contains('long'))this.classList.toggle('open')" title="{% if n.message|length > 160 %}Click to expand{% endif %}">{{ n.message[:160] }}{% if n.message|length > 160 %}<span class="ndots">… <u>more</u></span><span class="nfull">{{ n.message[160:] }}</span>{% endif %}</span><br>
+<small class="muted">{{ n.created_at.strftime('%Y-%m-%d %H:%M') if n.created_at else '' }} → {{ users.get(n.user_id, '#'+(n.user_id|string)) }}{% if patients.get(n.patient_id) %} · patient: {{ patients.get(n.patient_id) }}{% endif %}</small></div>
+{% if not n.read_at %}<button class="btn ghost sm" onclick="markOneRead({{ n.id }})" aria-label="Mark notification {{ n.id }} as read">✓</button>{% endif %}
+</div>
+{% else %}<div class="empty">No notifications.</div>{% endfor %}
+</div>
+{% if total_pages > 1 %}<div class="pager">
+{% if page > 1 %}<button class="btn ghost sm" hx-get="/admin/partials/notifications?page={{ page-1 }}&per_page={{ per_page }}&q={{ q|urlencode }}&unread={{ unread }}&role={{ role }}&event={{ event }}" hx-target="#ntable">← Prev</button>{% endif %}
+<span>Page {{ page }} / {{ total_pages }}</span>
+{% if page < total_pages %}<button class="btn ghost sm" hx-get="/admin/partials/notifications?page={{ page+1 }}&per_page={{ per_page }}&q={{ q|urlencode }}&unread={{ unread }}&role={{ role }}&event={{ event }}" hx-target="#ntable">Next →</button>{% endif %}
+</div>{% endif %}

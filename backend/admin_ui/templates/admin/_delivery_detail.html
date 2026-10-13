@@ -1,0 +1,29 @@
+{% import "admin/_icons.html" as I %}
+{% set d_title %}Delivery #{{ d.id }}{% endset %}
+{% set d_sub %}{{ (d.delivery_address or '')[:90] }}{% endset %}
+{% set d_pill %}{% if d.status == 'DELIVERED' %}<span class="pill p-green">DELIVERED</span>{% elif d.status == 'FAILED' %}<span class="pill p-red">FAILED</span>{% elif d.status == 'IN_TRANSIT' %}<span class="pill p-blue">IN TRANSIT</span>{% elif d.status == 'PICKED_UP' %}<span class="pill p-violet">PICKED UP</span>{% else %}<span class="pill p-amber">PENDING</span>{% endif %}{% endset %}
+{% include "admin/_detail_head.html" %}
+{% if d.status == 'FAILED' %}
+<div class="steps"><div class="step done"><div class="sdot">✓</div>Pending</div><div class="step bad"><div class="sdot">✕</div>Failed</div></div>
+{% if d.status_note %}<div class="dnote"><b>Failure note:</b> {{ d.status_note }}</div>{% endif %}
+{% else %}
+{% set flow = ['PENDING', 'PICKED_UP', 'IN_TRANSIT', 'DELIVERED'] %}
+{% set idx = flow.index(d.status) if d.status in flow else 0 %}
+<div class="steps">{% for s in flow %}<div class="step {% if loop.index0 < idx %}done{% elif loop.index0 == idx %}now{% endif %}"><div class="sdot">{% if loop.index0 < idx %}✓{% else %}{{ loop.index }}{% endif %}</div>{{ s.replace('_', ' ') }}</div>{% endfor %}</div>
+{% endif %}
+<div class="dsec"><h4>{{ I.icon('truck') }} Shipment</h4>
+<dl class="kv">
+<dt>Address</dt><dd>{{ d.delivery_address }}</dd>
+<dt>Rider</dt><dd>{{ rider.full_name ~ ' (' ~ rider.user_id ~ ')' if rider else 'Unassigned' }}</dd>
+<dt>Requested by</dt><dd>{{ requester.full_name if requester else '—' }}</dd>
+<dt>Status note</dt><dd>{{ d.status_note or '—' }}</dd>
+<dt>Updated</dt><dd>{{ d.updated_at.strftime('%Y-%m-%d %H:%M') if d.updated_at else '—' }}</dd>
+</dl>
+{% if rx %}<a class="drow" href="#" onclick="openDetail('/admin/partials/prescriptions/{{ rx.id }}');return false;"><span class="grow"><b>{{ rx.medication_name }}</b><small>Rx #{{ rx.id }}{% if patient %} · {{ patient.full_name }}{% endif %}</small></span><span class="go">→</span></a>{% endif %}</div>
+<div class="dsec"><h4>{{ I.icon('tag') }} Admin: override status</h4>
+<form hx-post="/admin/actions/deliveries/{{ d.id }}/status" hx-target="#dd-result" hx-swap="innerHTML" hx-on::response-error="document.getElementById('dd-result').innerHTML=event.detail.xhr.responseText" hx-on::after-request="if(event.detail.successful)openDetail(window._detailUrl)">
+<div><label class="f">Status</label><div class="field">{{ I.icon('tag') }}<select class="select" name="status">{% for s in ['PENDING','PICKED_UP','IN_TRANSIT','DELIVERED','FAILED'] %}<option value="{{ s }}" {% if s == d.status %}selected{% endif %}>{{ s.replace('_',' ') }}</option>{% endfor %}</select></div></div>
+<div style="margin-top:8px"><label class="f">Status note (optional)</label><div class="field">{{ I.icon('doc') }}<input class="input" name="status_note" value="{{ d.status_note or '' }}" placeholder="e.g. Left with front desk"></div></div>
+<div id="dd-result" style="margin-top:8px"></div>
+<p style="margin:8px 0 0"><button class="btn sm" type="submit">Apply status</button></p>
+</form></div>

@@ -1,0 +1,26 @@
+{% if compact %}<div class="feed">
+{% for d in deliveries %}
+<div class="feed-item"><span class="unread-dot"></span>
+<div style="flex:1"><b>{{ (d.delivery_address or '')[:50] }}</b><br>
+<small class="muted">{{ users.get(d.rider_id, 'Unassigned') if d.rider_id else 'Unassigned' }} · Rx #{{ d.prescription_id }}</small></div>
+{% if d.status == 'IN_TRANSIT' %}<span class="pill p-blue">IN TRANSIT</span>{% elif d.status == 'PICKED_UP' %}<span class="pill p-violet">PICKED UP</span>{% else %}<span class="pill p-amber">PENDING</span>{% endif %}</div>
+{% else %}<div class="empty">No active deliveries 🎉</div>{% endfor %}
+</div>{% else %}<p class="muted">{{ total }} deliveries — page {{ page }} / {{ total_pages }}</p>
+<div class="tbl-wrap"><table class="tbl">
+<tr><th>Address</th><th class="hide-sm">Rider</th><th>Status</th><th class="hide-sm">Updated</th><th>Admin</th></tr>
+{% for d in deliveries %}
+<tr><td class="rowlink" onclick="openDetail('/admin/partials/deliveries/{{ d.id }}')"><b class="t">{{ (d.delivery_address or '')[:60] }}</b><br><small class="muted">Rx #{{ d.prescription_id }}</small></td>
+<td class="hide-sm">{{ users.get(d.rider_id, '—') if d.rider_id else 'Unassigned' }}</td>
+<td>{% if d.status == 'DELIVERED' %}<span class="pill p-green">DELIVERED</span>{% elif d.status == 'FAILED' %}<span class="pill p-red">FAILED</span>{% elif d.status == 'IN_TRANSIT' %}<span class="pill p-blue">IN TRANSIT</span>{% elif d.status == 'PICKED_UP' %}<span class="pill p-violet">PICKED UP</span>{% else %}<span class="pill p-amber">PENDING</span>{% endif %}</td>
+<td class="hide-sm" style="white-space:nowrap">{{ d.updated_at.strftime('%Y-%m-%d %H:%M') if d.updated_at else '—' }}</td>
+<td><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center">
+<form hx-post="/admin/actions/deliveries/{{ d.id }}/assign" hx-swap="innerHTML" hx-target="#dr-{{ d.id }}" hx-on::response-error="document.getElementById('dr-{{ d.id }}').innerHTML=event.detail.xhr.responseText" hx-on::after-request="if(event.detail.successful)refreshDeliveries()" style="display:flex;gap:6px"><select class="select" name="rider_id" style="min-width:140px" aria-label="Assign rider"><option value="">Assign rider…</option>{% for r in riders %}<option value="{{ r.id }}" {% if d.rider_id == r.id %}selected{% endif %}>{{ r.full_name }}</option>{% endfor %}</select><button class="btn ghost sm" type="submit">Assign</button></form>
+<form hx-post="/admin/actions/deliveries/{{ d.id }}/status" hx-swap="innerHTML" hx-target="#dr-{{ d.id }}" hx-on::response-error="document.getElementById('dr-{{ d.id }}').innerHTML=event.detail.xhr.responseText" hx-on::after-request="if(event.detail.successful)refreshDeliveries()" style="display:flex;gap:6px"><select class="select" name="status" style="min-width:120px" aria-label="Delivery status">{% for s in ['PENDING','PICKED_UP','IN_TRANSIT','DELIVERED','FAILED'] %}<option value="{{ s }}" {% if d.status == s %}selected{% endif %}>{{ s }}</option>{% endfor %}</select><button class="btn ghost sm" type="submit">Set</button></form>
+</div><div id="dr-{{ d.id }}"></div></td></tr>
+{% else %}<tr><td colspan="5"><div class="empty">No deliveries found.</div></td></tr>{% endfor %}
+</table></div>
+{% if total_pages > 1 %}<div class="pager">
+{% if page > 1 %}<button class="btn ghost sm" hx-get="/admin/partials/deliveries?page={{ page-1 }}&status={{ status }}&rider_id={{ rider_id }}&q={{ q }}" hx-target="#dtable">← Prev</button>{% endif %}
+<span>Page {{ page }} / {{ total_pages }}</span>
+{% if page < total_pages %}<button class="btn ghost sm" hx-get="/admin/partials/deliveries?page={{ page+1 }}&status={{ status }}&rider_id={{ rider_id }}&q={{ q }}" hx-target="#dtable">Next →</button>{% endif %}
+</div>{% endif %}{% endif %}

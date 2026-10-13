@@ -1,0 +1,98 @@
+# ============================================
+# Northern Health Link — Render Blueprint
+# Generated from backend/.env keys (dev values intentionally NOT copied:
+# localhost/MySQL-localhost/placeholder secrets must not ship to prod).
+# Docs: https://render.com/docs/blueprint-spec
+# Deploy: push this repo, then Dashboard → New → Blueprint → select repo.
+# NOTE: Render auto-detects `render.yaml` (not `render.yml`) at repo root.
+# ============================================
+
+services:
+  # ---- Redis-compatible cache (JWT blacklist, Flask-Caching, SocketIO) ----
+  - type: keyvalue
+    name: nhls-redis
+    region: frankfurt
+    plan: free # upgrade if evictions appear; set maxmemoryPolicy=noeviction in Dashboard
+    maxmemoryPolicy: noeviction # JWT blacklist entries must not be evicted early
+
+  # ---- Flask + SocketIO API (gevent websocket worker) ----
+  - type: web
+    name: nhls-api
+    region: frankfurt # closest region to Ghana; keep DB (Aiven) in the same region
+    runtime: python
+    plan: free # needs Starter+ if you attach the uploads disk below
+    rootDir: backend
+    buildCommand: pip install -r requirements.txt
+    # Versioned migrations (migrations/versions/) run before every deploy.
+    preDeployCommand: python migrate.py migrate
+    # start.sh binds 127.0.0.1:5000 — Render requires 0.0.0.0:$PORT.
+    startCommand: gunicorn -k geventwebsocket.gunicorn.workers.GeventWebSocketWorker -w 1 --timeout 120 -b 0.0.0.0:$PORT wsgi:app
+    healthCheckPath: /health
+    # ---- Persistent uploads (lab result PHI) ----
+    # Render disks are ephemeral by default: redeploys WIPE backend/uploads/.
+    # For real PHI, uncomment the disk and point UPLOAD_FOLDER at it
+    # (requires a paid instance type).
+    # disk:
+    #   name: nhls-uploads
+    #   mountPath: /opt/render/project/src/backend/uploads
+    #   sizeGB: 1
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.13.5
+      - key: FLASK_ENV
+        value: production # wsgi.py defaults to production; explicit is safer
+      - key: SECRET_KEY
+        generateValue: true # generated once on first create; reuse, never commit
+      - key: JWT_SECRET_KEY
+        generateValue: true
+
+      # ---- MySQL (Render has no MySQL — use Aiven, same region as above) ----
+      - key: MYSQL_HOST
+        sync: false # e.g. xxx.aivencloud.com (Dashboard will prompt)
+      - key: MYSQL_PORT
+        value: 25060 # Aiven default; change if yours differs
+      - key: MYSQL_DATABASE
+        sync: false # e.g. defaultdb
+      - key: MYSQL_USER
+        sync: false # e.g. avnadmin
+      - key: MYSQL_PASSWORD
+        sync: false
+      # Aiven ENFORCES SSL. If unset, the app sets ssl_disabled=True and the
+      # connection FAILS. Either commit ca.pem and set this to its path
+      # (e.g. backend/ca.pem — Aiven CA certs are public, safe to commit),
+      # or set it to a path you provision at build time.
+      - key: MYSQL_SSL_CA
+        sync: false
+
+      # ---- Redis (wired from nhls-redis above; ProductionConfig needs it) ----
+      - key: REDIS_URL
+        fromService:
+          type: keyvalue
+          name: nhls-redis
+          property: connectionString
+      # Single gunicorn worker: keep the in-memory SocketIO queue.
+      # Set to 1 only if you raise workers above 1.
+      - key: SOCKETIO_MESSAGE_QUEUE
+        value: 0
+
+      # ---- CORS: must list every origin that calls the API ----
+      - key: CORS_ORIGINS
+        sync: false # e.g. https://your-expo-web-app.com (comma-separated)
+
+      - key: LOG_LEVEL
+        value: INFO
+
+      # ---- Uploads ----
+      # Default is relative (backend/uploads/lab_results) = EPHEMERAL on Render.
+      # With the disk above enabled, set this to /opt/render/project/src/backend/uploads/lab_results
+      - key: UPLOAD_FOLDER
+        value: uploads/lab_results
+      - key: MAX_CONTENT_LENGTH
+        value: 16777216 # 16 MB; lab.py enforces 10 MB per file on top
+
+# ============================================================
+# NOT in this file (handled outside Render):
+# - frontend/.env → EXPO_PUBLIC_API_URL=https://nhls-api.onrender.com
+#   (set in the Expo build profile; the mobile app is NOT deployed here)
+# - MySQL itself (Aiven) + MYSQL_SSL_CA ca.pem (see note above)
+# ============================================================

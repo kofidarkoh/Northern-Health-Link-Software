@@ -1,0 +1,12 @@
+{% import "admin/_icons.html" as I %}
+{% set d_title %}{{ l.action }}{% endset %}
+{% set d_sub %}{{ l.created_at.strftime('%Y-%m-%d %H:%M:%S') if l.created_at else '—' }}{% endset %}
+{% include "admin/_detail_head.html" %}
+<div class="dsec"><h4>{{ I.icon('audit') }} Event</h4>
+<dl class="kv">
+<dt>Actor</dt><dd>{{ actor.full_name ~ ' (' ~ actor.user_id ~ ')' if actor else ('User #' ~ l.user_id if l.user_id else 'System') }}</dd>
+<dt>Entity</dt><dd>{{ l.entity_type }}{% if l.entity_id %} #{{ l.entity_id }}{% endif %}</dd>
+</dl></div>
+<div class="dsec"><h4>{{ I.icon('doc') }} Payload</h4>
+{% if details %}<pre class="dnote" style="white-space:pre-wrap;word-break:break-word;margin:0">{{ details|tojson(indent=2) }}</pre>
+{% else %}<p class="muted">No details recorded for this event.</p>{% endif %}</div>

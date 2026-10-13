@@ -1,0 +1,22 @@
+{% import "admin/_avatar.html" as A %}
+<p class="muted">{{ total }} user{{ 's' if total != 1 else '' }} — page {{ page }} / {{ total_pages }}</p>
+<div class="tbl-wrap"><table class="tbl">
+  <tr><th>User</th><th class="hide-sm">User ID</th><th>Role</th><th class="hide-sm">Clinic</th><th>Status</th><th>Actions</th></tr>
+  {% for u in users %}
+  <tr>
+    <td class="rowlink" onclick="openDetail('/admin/partials/users/{{ u.id }}')"><span class="celluser">{{ A.avatar(u.full_name, u.id, 34, u.profile_picture) }}<span><b class="t">{{ u.full_name }}</b><br><small class="muted">{{ u.email or '—' }}</small></span></span></td>
+    <td class="hide-sm">{{ u.user_id }}</td>
+    <td><span class="pill role-{{ u.role }}">{{ u.role.replace('_',' ') }}</span></td>
+    <td class="hide-sm">{{ clinics.get(u.clinic_id, '—') if u.clinic_id else '—' }}</td>
+    <td><button class="btn ghost sm" onclick="toggleActive({{ u.id }}, this)">{% if u.active %}<span class="pill p-green">Active</span>{% else %}<span class="pill p-grey">Inactive</span>{% endif %}</button></td>
+    <td style="white-space:nowrap"><button class="btn ghost sm" onclick='openEditUser({{ u.id }}, {{ u.full_name|tojson }}, {{ u.role|tojson }}, {{ (u.clinic_id or "")|tojson }}, {{ (u.speciality or "")|tojson }}, {{ (u.phone or "")|tojson }}, {{ (u.email or "")|tojson }}, {{ 1 if u.active else 0 }}, {{ (u.profile_picture or "")|tojson }})'>Edit</button>
+      <button class="btn amber sm" onclick="resetPassword({{ u.id }})">Reset PW</button>
+      <button class="btn danger sm" onclick='deleteUser({{ u.id }}, {{ u.full_name|tojson }}, {{ u.user_id|tojson }})'>Deactivate</button></td>
+  </tr>
+  {% else %}<tr><td colspan="6"><div class="empty">No users found.</div></td></tr>{% endfor %}
+</table></div>
+{% if total_pages > 1 %}<div class="pager">
+  {% if page > 1 %}<button class="btn ghost sm" hx-get="/admin/partials/users?page={{ page-1 }}&per_page={{ per_page }}&role={{ role|urlencode }}&q={{ q|urlencode }}&clinic_id={{ clinic_id|urlencode }}" hx-target="#user-table">← Prev</button>{% endif %}
+  <span>Page {{ page }} / {{ total_pages }}</span>
+  {% if page < total_pages %}<button class="btn ghost sm" hx-get="/admin/partials/users?page={{ page+1 }}&per_page={{ per_page }}&role={{ role|urlencode }}&q={{ q|urlencode }}&clinic_id={{ clinic_id|urlencode }}" hx-target="#user-table">Next →</button>{% endif %}
+</div>{% endif %}

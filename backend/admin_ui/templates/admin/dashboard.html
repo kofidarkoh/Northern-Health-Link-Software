@@ -1,0 +1,17 @@
+{% extends "admin/shell.html" %}
+{% block heading %}Dashboard{% endblock %}
+{% block sub %}Live operations — patients, consults, labs, deliveries{% endblock %}
+{% block content %}
+<div id="stats" hx-get="/admin/partials/stats" hx-trigger="load" hx-swap="innerHTML"><p><span class="spinner"></span> Loading…</p></div>
+<div class="grid two" style="margin-top:14px;align-items:start">
+  <div class="card"><div class="pad">
+    <div class="toolbar" style="justify-content:space-between"><div><h3 style="margin:0">Pending lab requests</h3><p class="muted" style="margin:2px 0 0">Needs lab officer action · newest first</p></div><a class="btn ghost sm" href="/admin/labs?status=REQUESTED">View all →</a></div>
+    <div id="dash-labs" hx-get="/admin/partials/labs?status=REQUESTED&per_page=5&compact=1" hx-trigger="load" hx-swap="innerHTML" style="margin-top:8px"><span class="spinner"></span></div>
+  </div></div>
+  <div class="card"><div class="pad">
+    <div class="toolbar" style="justify-content:space-between"><div><h3 style="margin:0">Deliveries in motion</h3><p class="muted" style="margin:2px 0 0">Pending · picked up · in transit</p></div><a class="btn ghost sm" href="/admin/deliveries">View all →</a></div>
+    <div id="dash-del" hx-get="/admin/partials/deliveries?motion=1&per_page=5&compact=1" hx-trigger="load" hx-swap="innerHTML" style="margin-top:8px"><span class="spinner"></span></div>
+    <p class="toolbar" style="margin-bottom:0"><a class="btn ghost sm" href="/admin/deliveries">Open deliveries</a> <a class="btn ghost sm" href="/admin/consultations">Consultations</a> <a class="btn ghost sm" href="/admin/reports">Reports</a> <a class="btn ghost sm" href="/admin/notifications">Broadcast alert</a></p>
+  </div></div>
+</div>
+{% endblock %}

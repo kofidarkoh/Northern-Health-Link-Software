@@ -1,0 +1,23 @@
+{% extends "admin/shell.html" %}
+{% import "admin/_icons.html" as I %}
+{% block heading %}Appointments{% endblock %}
+{% block sub %}Video consultations: rural clinics → Tamale specialists — click a row for note details{% endblock %}
+{% block content %}
+<script>
+function refreshAppts(){
+  var v = function(id){ var el = document.getElementById(id); return el ? el.value : ''; };
+  htmx.ajax('GET', '/admin/partials/appointments?' + new URLSearchParams({
+    status: v('astatus'), specialist_id: v('aspec'), clinic_id: v('aclinic'),
+    date_from: v('adfrom'), date_to: v('adto'), q: v('aq') }).toString(), '#atable');
+}
+</script>
+<div class="card"><div class="pad"><div class="filters" style="grid-template-columns:1fr 1fr 1fr 1fr">
+<div><label class="f">Status</label><div class="field">{{ I.icon('cal') }}<select id="astatus" name="status" class="select" hx-get="/admin/partials/appointments" hx-trigger="change" hx-target="#atable" hx-include="#aspec,#aclinic,#adfrom,#adto,#aq"><option value="">All statuses</option>{% for s in ['REQUESTED','SCHEDULED','IN_PROGRESS','COMPLETED','CANCELLED'] %}<option value="{{ s }}">{{ s }}</option>{% endfor %}</select></div></div>
+<div><label class="f">Specialist</label><div class="field">{{ I.icon('user') }}<select id="aspec" name="specialist_id" class="select" hx-get="/admin/partials/appointments" hx-trigger="change" hx-target="#atable" hx-include="#astatus,#aclinic,#adfrom,#adto,#aq"><option value="">All specialists</option>{% for s in specialists %}<option value="{{ s.id }}">{{ s.full_name }}</option>{% endfor %}</select></div></div>
+<div><label class="f">Clinic</label><div class="field">{{ I.icon('clinic') }}<select id="aclinic" name="clinic_id" class="select" hx-get="/admin/partials/appointments" hx-trigger="change" hx-target="#atable" hx-include="#astatus,#aspec,#adfrom,#adto,#aq"><option value="">All clinics</option>{% for c in clinics %}<option value="{{ c.id }}">{{ c.name }}</option>{% endfor %}</select></div></div>
+<div><label class="f">Search</label><div class="field">{{ I.icon('search') }}<input id="aq" name="q" class="input" placeholder="Patient name…" hx-get="/admin/partials/appointments" hx-trigger="keyup changed delay:400ms" hx-target="#atable" hx-include="#astatus,#aspec,#aclinic,#adfrom,#adto"></div></div>
+<div><label class="f">From</label><div class="field">{{ I.icon('cal') }}<input id="adfrom" name="date_from" type="date" class="input" hx-get="/admin/partials/appointments" hx-trigger="change" hx-target="#atable" hx-include="#astatus,#aspec,#aclinic,#adto,#aq"></div></div>
+<div><label class="f">To</label><div class="field">{{ I.icon('cal') }}<input id="adto" name="date_to" type="date" class="input" hx-get="/admin/partials/appointments" hx-trigger="change" hx-target="#atable" hx-include="#astatus,#aspec,#aclinic,#adfrom,#aq"></div></div>
+</div></div></div>
+<div id="atable" hx-get="/admin/partials/appointments" hx-trigger="load" hx-swap="innerHTML" style="margin-top:14px"><p><span class="spinner"></span> Loading…</p></div>
+{% endblock %}

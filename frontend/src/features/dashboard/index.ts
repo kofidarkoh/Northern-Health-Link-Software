@@ -1,0 +1,6 @@
+export { RoleDashboard } from './RoleDashboard'
+export type { DashboardStat, DashboardAction } from './RoleDashboard'
+export { ClinicDashboard } from './ClinicDashboard'
+export { SpecialistDashboard } from './SpecialistDashboard'
+export { LabDashboard } from './LabDashboard'
+export { RiderDashboard } from './RiderDashboard'
